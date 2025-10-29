@@ -1,6 +1,6 @@
 import numpy as np
-from entorno_navegacion import Navegacion
-from representacion import FeedbackConstruction
+from navigation_environment import Navigation
+from representation import FeedbackConstruction
 import pickle
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -32,21 +32,21 @@ class SarsaAgent:
             Evaluates the agent's performance over a specified number of episodes.
     """
     def __init__(self, env, feedback, learning_rate=0.5, discount_factor=0.9, epsilon=0.5):
-        # Mejor no toques estas líneas
+        # It's better not to touch these lines
         self.env = env
         self.feedback = feedback
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.epsilon = epsilon
         self.num_actions = env.action_space.n
-        self.feature_size = feedback.iht.size # Si vas a añadir más variables (features) además del tile coding, resérvales espacio aquí.
+        self.feature_size = feedback.iht.size # If you're going to add more variables (features) besides tile coding, reserve space for them here.
         ##############################
 
-        # Te damos los pesos inicializados a cero. Pero esto es arbitrario. Lo puedes cambiar si quieres.
+        # We give you the weights initialized to zero. But this is arbitrary. You can change it if you want.
         self.weights = [np.zeros(self.feature_size) for _ in range(self.num_actions)]
         
-        # Tendrás que usar estrategias para monitorizar el aprendizaje del agente.
-        # Añade aquí los atributos que necesites para hacerlo.
+        # You will need to use strategies to monitor the agent's learning.
+        # Add here the attributes you need to do it.
 
         ##############################
 
@@ -81,8 +81,8 @@ class SarsaAgent:
         """
         features = self.feedback.process_observation(state)
         q_values = np.array([0,0,0,0])
-        # Calcula los valores de cada acción para el estado dado como argumento (aproximación
-        # lineal). Añade aquí tu código
+        # Calculate the values of each action for the given state (linear 
+        # approximation). Add your code here
 
 
         ###################################
@@ -109,7 +109,7 @@ class SarsaAgent:
             qs_next = self.get_q_values(next_state)
             q_next = qs_next[next_action]            
             td_error = reward + self.discount_factor * q_next - q_current
-        # Añade aquí tu código para actualizar los pesos del agente
+        # Add your code here to update the agent's weights
         
         #############################################
         
@@ -125,22 +125,22 @@ class SarsaAgent:
         Returns:
         None
         """
-        #Juega con estos tres hiperparámetros
-        decay_start = .9 #entre 0 y 1. 
-        decay_rate = .9 #control del decrecimiento (exponencial) de epsilon
-        min_epsilon = .5 #valor mínimo de epsilon
+        # Play with these three hyperparameters
+        decay_start = .9 # between 0 and 1. 
+        decay_rate = .9 # control of the (exponential) decrease of epsilon
+        min_epsilon = .5 # minimum value of epsilon
         ####################################
         for episode in range(num_episodes):
-            #Set-up del episodio
+            # Episode setup
             state, _ = self.env.reset()
-            #Decrecimiento exponencial de epsilon hasta valor mínimo desde comienzo marcado
+            # Exponential decrease of epsilon to minimum value from marked start
             if episode >= num_episodes*decay_start:
                 self.epsilon *= decay_rate
                 self.epsilon = np.max([min_epsilon,self.epsilon])
-            #Primera acción
+            # First action
             action = self.get_action(state, self.epsilon)            
             n_steps = 0
-            #Generación del episodio
+            # Episode generation
             total_undiscounted_return = 0
             while True:                                        
                 next_state, reward, terminated, truncated, _ = self.env.step(action)  
@@ -153,12 +153,12 @@ class SarsaAgent:
                 if terminated or truncated:
                     break
 
-            #Aquí también puedes cambiar la frecuencia con la que muestras
-            #los resultados en la consola, e incluso deshabilitarla.
+            # Here you can also change the frequency with which you display
+            # the results in the console, and even disable it.
             episodes_update = 1000
             if episode % episodes_update == 0:                      
                 print(f"Episode {episode}, Total undiscounted return: {total_undiscounted_return}, Epsilon: {self.epsilon}")
-                #puedes salvar el estado actual del agente, si te viene bien    
+                # you can save the current state of the agent, if you find it useful    
 
     
     def evaluate(self, num_episodes):
@@ -197,13 +197,13 @@ class SarsaAgent:
 
 
 if __name__ == "__main__":
-    #instanciamos entorno, representación y agente
-    #No tocar
-    env = Navegacion()
+    # Instantiate environment, representation and agent
+    # Don't touch
+    env = Navigation()
     warehouse_width = 10.0
     warehouse_height = 10.0
     ################
-    #diseñar los tiles
+    # Design the tiles
     n_tiles_width = 1
     n_tiles_height = 1
     n_tilings = 1
@@ -219,11 +219,9 @@ if __name__ == "__main__":
     # Train the agent
     agent.train(num_episodes=10000)
     
-    #save the agent object into memory    
-    with open('agente_grupo_xx_a.pkl', 'wb') as f:
+    # Save the agent object into memory    
+    with open('agent_group_xx_a.pkl', 'wb') as f:
         pickle.dump(agent, f)
 
     # Evaluate the agent
     agent.evaluate(num_episodes=1)
-
-    

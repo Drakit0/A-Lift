@@ -3,7 +3,7 @@ from tiles3 import IHT, tiles
 
 class FeedbackConstruction:
     def __init__(self, dims, n_tiles, n_tilings, target_area):
-        # No tocar estas líneas
+        # Don't touch these lines
         self.width = dims[0]
         self.height = dims[1]
         self.scale_width = dims[0] / n_tiles[0]
@@ -13,7 +13,7 @@ class FeedbackConstruction:
         self.max_size = n_tiles[0] * n_tiles[1] * self.num_tilings + 2000
         self.iht = IHT(self.max_size)
         ##############################
-        # Si quieres añadir más atributos, añádelos a partir de aquí
+        # If you want to add more attributes, add them from here
         
     def process_observation(self, obs):
         """
@@ -42,11 +42,11 @@ class FeedbackConstruction:
         # Get active tiles
         active_tiles = self._get_active_tiles(norm_x, norm_y)
 
-        # Añade aquí tu código para devolver la observación procesada
-        observacion = active_tiles
+        # Add your code here to return the processed observation
+        observation = active_tiles
         ##############################
 
-        return observacion
+        return observation
 
     def _get_active_tiles(self, norm_x, norm_y):
         """
@@ -60,35 +60,39 @@ class FeedbackConstruction:
         Returns:
             list: A list of active tile indices.
         """
-        # Implementación del tiling con offset impar (3,1)                         
+        
+        # Implementation of the tiling with odd offset (3, 1)                        
         offset_factor_x = 1/self.num_tilings * 3
         offset_factor_y = 1/self.num_tilings * 1
         active_tiles = []
+        
         for i in range(self.num_tilings):
             offset_x = offset_factor_x * i
             offset_y = offset_factor_y * i
+            
             tile_temp = tiles(self.iht, 1, 
                     [norm_x - offset_x, 
                     norm_y - offset_y],
                     ints=[i])
+            
             active_tiles.append(tile_temp[0])
                 
         return active_tiles
 
   
 if __name__ == "__main__":
-    # Espacio para pruebas
+    # Space for testing
 
-    # No hay por qué tocar este código
+    # No need to touch this code
     warehouse_width = 10.0
     warehouse_height = 10.0
     target_area = (2.5, 8, 5.0, 2.0)
     ##############################
-    # Libertad total desde aquí
+    # Complete freedom from here
     n_tiles_width = 1
     n_tiles_height = 1
     n_tilings = 2
 
 
-    realimentacion = FeedbackConstruction((warehouse_width, warehouse_height), (n_tiles_width, n_tiles_height), n_tilings, 
+    feedback = FeedbackConstruction((warehouse_width, warehouse_height), (n_tiles_width, n_tiles_height), n_tilings, 
                                 target_area)

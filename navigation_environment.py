@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle
 
-class Navegacion(gym.Env):
+class Navigation(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 10}
 
     def __init__(self, render_mode=None):
@@ -26,7 +26,7 @@ class Navegacion(gym.Env):
             fig (matplotlib.figure.Figure): Figure for rendering.
             ax (matplotlib.axes.Axes): Axis for rendering.
         """
-        super(Navegacion, self).__init__()
+        super(Navigation, self).__init__()
         self.render_mode = render_mode
         # Define the size of the Navigation environment
         self.width = 10.0
@@ -90,7 +90,6 @@ class Navegacion(gym.Env):
         Perform a step in the environment based on the given action.
         Args:
             action (int): The action to be taken by the agent.
-            
         Returns:
             tuple: A tuple containing:
                 - obs (object): The observation after taking the action.
@@ -292,8 +291,8 @@ class Navegacion(gym.Env):
         plt.draw()
         plt.pause(0.1)
 
-        #save the figure
-        self.fig.savefig('ejemplo_entorno.png')  # Save as PNG
+        # Save the figure
+        self.fig.savefig('environment_example.png')  # Save as PNG
         if self.render_mode == 'human':
             plt.draw(); plt.pause(0.1)
             return  
@@ -376,7 +375,7 @@ class Navegacion(gym.Env):
 
         plt.title('Navigation Environment')
         plt.draw()
-        #self.fig.savefig('ejemplo.png')  # Save as PNG
+        # self.fig.savefig('example.png')  # Save as PNG
         plt.pause(0.1)
 
         if mode == 'rgb_array':
@@ -385,12 +384,12 @@ class Navegacion(gym.Env):
             image = image.reshape(self.fig.canvas.get_width_height()[::-1] + (3,))
             return image
         # Add grid labels
-        #for x in range(n_tiles_width):
-        #    self.ax.text(x * tile_width + tile_width/2, -0.3, str(x), 
-        #                ha='center', va='center', fontsize=8)
-        #for y in range(n_tiles_height):
-        #    self.ax.text(-0.3, y * tile_height + tile_height/2, str(y), 
-        #                ha='center', va='center', fontsize=8)
+        # for x in range(n_tiles_width):
+        #     self.ax.text(x * tile_width + tile_width/2, -0.3, str(x), 
+        #                 ha='center', va='center', fontsize=8)
+        # for y in range(n_tiles_height):
+        #     self.ax.text(-0.3, y * tile_height + tile_height/2, str(y), 
+        #                 ha='center', va='center', fontsize=8)
 
     def close(self):
         if self.fig is not None:
@@ -400,7 +399,7 @@ class Navegacion(gym.Env):
 
 # Example usage
 if __name__ == "__main__":
-    env = Navegacion()
+    env = Navigation()
     obs = env.reset()
     done = False
 
@@ -408,7 +407,7 @@ if __name__ == "__main__":
         action = env.action_space.sample()  # Your agent would make a decision here
         obs, reward, terminated, truncated, info = env.step(action)
         print(f'Action: {action}; Observation: {obs}; done? {terminated or truncated}; Reward: {reward}')
-        #env._render_tiles(n_tiles_width = 10, n_tiles_height = 10, n_tilings = 8) 
+        # env._render_tiles(n_tiles_width = 10, n_tiles_height = 10, n_tilings = 8) 
         env._render_tiles(mode='human', n_tiles_width = 10, n_tiles_height = 10, n_tilings = 8)
         if done:
             obs, info = env.reset()
