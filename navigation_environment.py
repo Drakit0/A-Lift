@@ -119,7 +119,14 @@ class Navigation(gym.Env):
             terminated = True
 
         # Reward calculation
-        reward = -50
+        if self.target:
+            reward = 100
+            
+        elif self.collision:
+            reward = -100
+            
+        else:
+            reward = 
 
         if self.steps >= self.max_steps:
             truncated = True
