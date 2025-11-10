@@ -12,7 +12,7 @@ class FeedbackConstruction:
         self.num_tilings = n_tilings
         self.max_size = n_tiles[0] * n_tiles[1] * self.num_tilings + 2000
         self.iht = IHT(self.max_size)
-        ##############################
+
         # If you want to add more attributes, add them from here
         
     def process_observation(self, obs):
@@ -42,9 +42,7 @@ class FeedbackConstruction:
         # Get active tiles
         active_tiles = self._get_active_tiles(norm_x, norm_y)
 
-        # Add your code here to return the processed observation
         observation = active_tiles
-        ##############################
 
         return observation
 

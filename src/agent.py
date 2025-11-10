@@ -3,7 +3,6 @@ from navigation_environment import Navigation
 from representation import FeedbackConstruction
 import pickle
 import matplotlib.pyplot as plt
-from datetime import datetime
 
 class SarsaAgent:
     """
@@ -39,16 +38,15 @@ class SarsaAgent:
         self.discount_factor = discount_factor
         self.epsilon = epsilon
         self.num_actions = env.action_space.n
-        self.feature_size = feedback.iht.size # If you're going to add more variables (features) besides tile coding, reserve space for them here.
-        ##############################
+        self.feature_size = feedback.iht.size
 
-        # We give you the weights initialized to zero. But this is arbitrary. You can change it if you want.
-        self.weights = [np.zeros(self.feature_size) for _ in range(self.num_actions)]
+        #TODO: try other params
+        self.weights = np.zeros((self.num_actions, self.feature_size))
         
-        # You will need to use strategies to monitor the agent's learning.
-        # Add here the attributes you need to do it.
-
-        ##############################
+        self.episode_returns = []
+        self.episode_lengths = []
+        self.success_rate = []
+        self.epsilon_history = []
 
     def get_action(self, state, epsilon=None):
         """
@@ -60,11 +58,13 @@ class SarsaAgent:
         Returns:
         int: The selected action.
         """
+        
         if epsilon is None:
             epsilon = self.epsilon
         
         if np.random.random() < epsilon:
             return self.env.action_space.sample()  # Random action
+        
         else:
             q_values = self.get_q_values(state)
             return np.argmax(q_values)
@@ -79,13 +79,15 @@ class SarsaAgent:
         Returns:
         np.ndarray: A numpy array of Q-values for each action in the given state.
         """
+        
         features = self.feedback.process_observation(state)
-        q_values = np.array([0,0,0,0])
-        # Calculate the values of each action for the given state (linear 
-        # approximation). Add your code here
-
-
-        ###################################
+        q_values = np.zeros(self.num_actions)
+        
+        # Calculate the values of each action for the given state (linear approximation)
+        for action in range(self.num_actions):
+            for feature in features:
+                q_values[action] += self.weights[action][feature]
+            
         return q_values
     
     def update(self, state, action, reward, next_state, next_action, terminated):
@@ -102,18 +104,22 @@ class SarsaAgent:
         """
         qs_current = self.get_q_values(state)       
         q_current = qs_current[action]
+        
         # td_error
         if terminated:
             td_error = reward - q_current
+            
         else:
             qs_next = self.get_q_values(next_state)
             q_next = qs_next[next_action]            
             td_error = reward + self.discount_factor * q_next - q_current
-        # Add your code here to update the agent's weights
         
-        #############################################
+        features = self.feedback.process_observation(state)
         
-    def train(self, num_episodes):
+        self.weights[action][features] += self.learning_rate * td_error
+
+                
+    def train(self, num_episodes, decay_start, decay_rate, min_epsilon):
         """
         Train the agent using the SARSA(0) algorithm.
         Parameters:
@@ -125,39 +131,63 @@ class SarsaAgent:
         Returns:
         None
         """
-        # Play with these three hyperparameters
-        decay_start = .9 # between 0 and 1. 
-        decay_rate = .9 # control of the (exponential) decrease of epsilon
-        min_epsilon = .5 # minimum value of epsilon
-        ####################################
+        
+        success_window = 100  # Track success over last N episodes
+        recent_successes = []
+
         for episode in range(num_episodes):
             # Episode setup
             state, _ = self.env.reset()
+            
             # Exponential decrease of epsilon to minimum value from marked start
             if episode >= num_episodes*decay_start:
                 self.epsilon *= decay_rate
                 self.epsilon = np.max([min_epsilon,self.epsilon])
+            
+            self.epsilon_history.append(self.epsilon)
+            
             # First action
             action = self.get_action(state, self.epsilon)            
             n_steps = 0
+            
             # Episode generation
             total_undiscounted_return = 0
+            
             while True:                                        
                 next_state, reward, terminated, truncated, _ = self.env.step(action)  
-                total_undiscounted_return += reward          
+                total_undiscounted_return += reward  
+                        
                 next_action = self.get_action(next_state, self.epsilon)
-                self.update(state, action, reward, next_state, next_action, terminated)    
+                self.update(state, action, reward, next_state, next_action, terminated)  
+                  
                 state = next_state
                 action = next_action                
                 n_steps += 1
+                
                 if terminated or truncated:
                     break
-
-            # Here you can also change the frequency with which you display
-            # the results in the console, and even disable it.
-            episodes_update = 1000
+            
+            # Track metrics
+            self.episode_returns.append(total_undiscounted_return)
+            self.episode_lengths.append(n_steps)
+            
+            # Track success (reached target)
+            success = terminated and total_undiscounted_return > -20  # Adjust threshold
+            recent_successes.append(1 if success else 0)
+            
+            if len(recent_successes) > success_window:
+                recent_successes.pop(0)
+            
+            current_success_rate = np.mean(recent_successes) * 100
+            self.success_rate.append(current_success_rate)
+            
+            episodes_update = 1000 # Display updates
+            
             if episode % episodes_update == 0:                      
                 print(f"Episode {episode}, Total undiscounted return: {total_undiscounted_return}, Epsilon: {self.epsilon}")
+                # print(f"Steps: {n_steps}")
+                # print(f"Success Rate (last {success_window}): {current_success_rate:.1f}%")
+                # print(f"Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
                 # you can save the current state of the agent, if you find it useful    
 
     
@@ -176,15 +206,17 @@ class SarsaAgent:
         - The environment is reset at the beginning of each episode.
         - The agent's action is determined by the `get_action` method with epsilon set to 0.
         """
+        
         total_returns = []
-        for episode in range(num_episodes):
+        
+        for _  in range(num_episodes):
             state, _ = self.env.reset()
             total_undiscounted_return = 0
             terminated = False
             
             while not terminated:
-                action = self.get_action(state, epsilon=0.01)  # Greedy policy
-                next_state, reward, terminated, truncated, _ = self.env.step(action)
+                action = self.get_action(state, epsilon=self.epsilon)  # Greedy policy
+                next_state, reward, terminated, _, _ = self.env.step(action)
                 self.env.render()
                 state = next_state
                 total_undiscounted_return += reward
@@ -193,35 +225,93 @@ class SarsaAgent:
         
         avg_return = np.mean(total_returns)
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
+        
         return avg_return
+    
+    def plot_training_metrics(self, num_episodes, avg_return):
+        """Plot training progress"""
+        
+        _, axes = plt.subplots(2, 2, figsize=(12, 10))
+        
+        # Returns over time
+        axes[0, 0].plot(self.episode_returns)
+        axes[0, 0].set_title('Episode Returns')
+        axes[0, 0].set_xlabel('Episode')
+        axes[0, 0].set_ylabel('Total Return')
+        axes[0, 0].grid(True)
+        
+        # Moving average of returns
+        window = 100
+        if len(self.episode_returns) >= window:
+            moving_avg = np.convolve(self.episode_returns, np.ones(window)/window, mode='valid')
+            axes[0, 1].plot(moving_avg)
+            axes[0, 1].set_title(f'Returns (Moving Avg, window={window})')
+            axes[0, 1].set_xlabel('Episode')
+            axes[0, 1].set_ylabel('Avg Return')
+            axes[0, 1].grid(True)
+        
+        # Episode lengths
+        axes[1, 0].plot(self.episode_lengths)
+        axes[1, 0].set_title('Episode Lengths')
+        axes[1, 0].set_xlabel('Episode')
+        axes[1, 0].set_ylabel('Steps')
+        axes[1, 0].grid(True)
+        
+        # Success rate
+        axes[1, 1].plot(self.success_rate)
+        axes[1, 1].set_title('Success Rate')
+        axes[1, 1].set_xlabel('Episode')
+        axes[1, 1].set_ylabel('Success %')
+        axes[1, 1].grid(True)
+        
+        plt.tight_layout()
+        plt.savefig(f'plots/training_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
+        plt.show()
 
 
 if __name__ == "__main__":
+    
     # Instantiate environment, representation and agent
-    # Don't touch
     env = Navigation()
     warehouse_width = 10.0
     warehouse_height = 10.0
-    ################
+
     # Design the tiles
-    n_tiles_width = 1
-    n_tiles_height = 1
-    n_tilings = 1
+    n_tiles_width = 10 # Number of tiles along W
+    n_tiles_height = 10 # Number of tiles along H  
+    n_tilings = 8 # Overlapping tiles
     
     target_area = (2.5, 8, 1.0, 2.0)
-
+    
     feedback = FeedbackConstruction((warehouse_width, warehouse_height), 
                                  (n_tiles_width, n_tiles_height), 
                                  n_tilings, target_area)
     
-    agent = SarsaAgent(env, feedback, learning_rate=1, discount_factor=0.99, epsilon=0.5)
+    #Initialize the agent
+    learning_rate = 0.1
+    discount_factor = 0.99 # Gamma: importance of future rewards
+    epsilon = 0.1
+    
+    agent = SarsaAgent(env,
+                       feedback, 
+                       learning_rate, 
+                       discount_factor, 
+                       epsilon)
     
     # Train the agent
-    agent.train(num_episodes=10000)
+    decay_start = 0.9 # Start epsilon decay at n of total episodes
+    decay_rate = 0.9 # Control of the (exponential) decrease of epsilon
+    min_epsilon = 0.05 
+    num_episodes = 10000
+    
+    agent.train(num_episodes, decay_start, decay_rate, min_epsilon)
+    
+    # Evaluate the agent
+    avg_return = agent.evaluate(num_episodes=1)
     
     # Save the agent object into memory    
-    with open('agent_group_xx_a.pkl', 'wb') as f:
+    with open(f'models/trained_a_lift_{num_episodes}_{learning_rate}_{epsilon}_{avg_return:.2f}.pkl', 'wb') as f:
         pickle.dump(agent, f)
-
-    # Evaluate the agent
-    agent.evaluate(num_episodes=1)
+    
+    # Plot the training results
+    agent.plot_training_metrics(num_episodes, avg_return)

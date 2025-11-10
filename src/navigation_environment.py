@@ -118,15 +118,17 @@ class Navigation(gym.Env):
             self.target = True
             terminated = True
 
-        # Reward calculation
+        # Reward calculation # TODO: Try other rewards
         if self.target:
-            reward = 100
+            reward = 10
             
         elif self.collision:
-            reward = -100
+            reward = -10
             
         else:
-            reward = 
+            # reward = -(abs(new_pos[0] - (self.target_area[0] + self.target_area[2]/2))+
+            #            abs(new_pos[1] - (self.target_area[1] + self.target_area[3]/2)))
+            reward = -0.1
 
         if self.steps >= self.max_steps:
             truncated = True
@@ -404,7 +406,7 @@ class Navigation(gym.Env):
             self.fig = None
             self.ax = None
 
-# Example usage
+
 if __name__ == "__main__":
     env = Navigation()
     obs = env.reset()
