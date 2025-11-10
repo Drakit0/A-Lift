@@ -116,7 +116,7 @@ class QLAgent:
             td_error: float = reward - q_current
             
         else:
-            q_next: np.ndarray = np.max(self.get_q_values(next_state))
+            q_next: float = np.max(self.get_q_values(next_state))
             td_error: float = reward + self.discount_factor * q_next - q_current
         
         features: List[int] = self.feedback.process_observation(state)
