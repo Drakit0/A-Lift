@@ -7,6 +7,7 @@ from typing import Optional, Tuple, List, Dict, Any
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 
+
 class Navigation(gym.Env):
     """Navigation environment for reinforcement learning.
     
@@ -399,13 +400,13 @@ class Navigation(gym.Env):
         self.ax.add_patch(Rectangle(self.target_area[:2], self.target_area[2], self.target_area[3], 
                                     fill=True, facecolor='lightgreen', edgecolor='green', alpha=0.5))
 
-
         # Draw agent
         agent_color: str = 'orange'
         self.ax.add_patch(Circle(self.agent_pos, radius=self.agent_radius, fill=True, facecolor=agent_color))
 
         # Highlight active tiles
         active_tile_coords: List[Tuple[float, float]] = []
+        
         for i in range(n_tilings):
             active_tile_coords.append(self.detect_tile_coords(i, n_tilings, n_tiles_width, n_tiles_height, self.agent_pos))
         
@@ -424,7 +425,9 @@ class Navigation(gym.Env):
             self.fig.canvas.draw()
             image: np.ndarray = np.frombuffer(self.fig.canvas.tostring_rgb(), dtype='uint8')
             image = image.reshape(self.fig.canvas.get_width_height()[::-1] + (3,))
+            
             return image
+        
         # Add grid labels
         # for x in range(n_tiles_width):
         #     self.ax.text(x * tile_width + tile_width/2, -0.3, str(x), 
