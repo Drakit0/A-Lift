@@ -1,74 +1,91 @@
 import numpy as np
 from tiles3 import IHT, tiles
+from typing import List, Tuple
 
 class FeedbackConstruction:
-    def __init__(self, dims, n_tiles, n_tilings, target_area):
-        # Don't touch these lines
-        self.width = dims[0]
-        self.height = dims[1]
-        self.scale_width = dims[0] / n_tiles[0]
-        self.scale_height = dims[1] / n_tiles[1]
-        self.target_area = target_area        
-        self.num_tilings = n_tilings
-        self.max_size = n_tiles[0] * n_tiles[1] * self.num_tilings + 2000
-        self.iht = IHT(self.max_size)
-
-        # If you want to add more attributes, add them from here
+    """Feedback construction using tile coding for state representation.
+    
+    Attributes:
+        width: Width of the environment.
+        height: Height of the environment.
+        scale_width: Scale factor for width normalization.
+        scale_height: Scale factor for height normalization.
+        target_area: The target area coordinates.
+        num_tilings: Number of tilings for tile coding.
+        max_size: Maximum size of the index hash table.
+        iht: Index hash table for tile coding.
+    """
+    
+    def __init__(self, dims: Tuple[float, float], n_tiles: Tuple[int, int], 
+                 n_tilings: int, target_area: Tuple[float, float, float, float]) -> None:
+        """Initialize the FeedbackConstruction.
         
-    def process_observation(self, obs):
+        Args:
+            dims: Tuple of (width, height) of the environment.
+            n_tiles: Tuple of (n_tiles_width, n_tiles_height) for tiling.
+            n_tilings: Number of tilings for tile coding.
+            target_area: The target area as (x, y, width, height).
         """
-        Processes the environment observation and returns the active tile features corresponding to the agent's normalized position.
-            obs (Sequence or np.ndarray): Observation from the environment containing at least four elements:
+        
+        self.width: float = dims[0]
+        self.height: float = dims[1]
+        self.scale_width: float = dims[0] / n_tiles[0]
+        self.scale_height: float = dims[1] / n_tiles[1]
+        self.target_area: Tuple[float, float, float, float] = target_area        
+        self.num_tilings: int = n_tilings
+        self.max_size: int = n_tiles[0] * n_tiles[1] * self.num_tilings + 2000
+        self.iht: IHT = IHT(self.max_size)
+
+        
+    def process_observation(self, obs: np.ndarray) -> List[int]:
+        """Processes the environment observation and returns the active tile features.
+        
+        Args:
+            obs: Observation from the environment containing at least four elements:
                 - obs[0:2]: agent (x, y) position in environment coordinates.
                 - obs[2]: collision flag (read but not used by this implementation).
                 - obs[3]: target area identifier (read but not used by this implementation).
-            np.ndarray: Array of active tiles as produced by self._get_active_tiles(norm_x, norm_y).
-                        The agent position is normalized by self.scale_width and self.scale_height
-                        prior to computing active tiles.
-        Notes:
-            - This method expects the instance to provide numeric attributes scale_width and scale_height,
-              and a method _get_active_tiles(norm_x, norm_y) that maps normalized coordinates to tile features.
-            - Only the agent position is currently used to compute the returned observation; other components
-              of obs (collision, target area) are read but not incorporated into the returned value.
+                
+        Returns:
+            Array of active tiles as produced by _get_active_tiles.
         """
-        agent_pos = obs[:2]
-        collision = obs[2]
-        target_area = obs[3]
+        
+        agent_pos: np.ndarray = obs[:2]
+        collision: float = obs[2]
+        target_area: float = obs[3]
         
         # Normalize agent position
-        norm_x = agent_pos[0] / self.scale_width
-        norm_y = agent_pos[1] / self.scale_height
+        norm_x: float = agent_pos[0] / self.scale_width
+        norm_y: float = agent_pos[1] / self.scale_height
         
         # Get active tiles
-        active_tiles = self._get_active_tiles(norm_x, norm_y)
+        active_tiles: List[int] = self._get_active_tiles(norm_x, norm_y)
 
-        observation = active_tiles
+        observation: List[int] = active_tiles
 
         return observation
 
-    def _get_active_tiles(self, norm_x, norm_y):
-        """
-        Calculate the active tiles for given normalized x and y coordinates.
-        This method computes the active tiles based on the normalized coordinates
-        (norm_x, norm_y) and the number of tilings. It applies specific offsets
-        for each tiling to determine the active tiles.
+    def _get_active_tiles(self, norm_x: float, norm_y: float) -> List[int]:
+        """Calculate the active tiles for given normalized x and y coordinates.
+        
         Args:
-            norm_x (float): Normalized x-coordinate.
-            norm_y (float): Normalized y-coordinate.
+            norm_x: Normalized x-coordinate.
+            norm_y: Normalized y-coordinate.
+            
         Returns:
-            list: A list of active tile indices.
+            A list of active tile indices.
         """
         
         # Implementation of the tiling with odd offset (3, 1)                        
-        offset_factor_x = 1/self.num_tilings * 3
-        offset_factor_y = 1/self.num_tilings * 1
-        active_tiles = []
+        offset_factor_x: float = 1/self.num_tilings * 3
+        offset_factor_y: float = 1/self.num_tilings * 1
+        active_tiles: List[int] = []
         
         for i in range(self.num_tilings):
-            offset_x = offset_factor_x * i
-            offset_y = offset_factor_y * i
+            offset_x: float = offset_factor_x * i
+            offset_y: float = offset_factor_y * i
             
-            tile_temp = tiles(self.iht, 1, 
+            tile_temp: List[int] = tiles(self.iht, 1, 
                     [norm_x - offset_x, 
                     norm_y - offset_y],
                     ints=[i])
@@ -79,18 +96,17 @@ class FeedbackConstruction:
 
   
 if __name__ == "__main__":
-    # Space for testing
 
-    # No need to touch this code
-    warehouse_width = 10.0
-    warehouse_height = 10.0
-    target_area = (2.5, 8, 5.0, 2.0)
-    ##############################
-    # Complete freedom from here
-    n_tiles_width = 1
-    n_tiles_height = 1
-    n_tilings = 2
+    warehouse_width: float = 10.0
+    warehouse_height: float = 10.0
+    target_area: Tuple[float, float, float, float] = (2.5, 8, 5.0, 2.0)
 
+    # Start the experiment
+    n_tiles_width: int = 1
+    n_tiles_height: int = 1
+    n_tilings: int = 2
 
-    feedback = FeedbackConstruction((warehouse_width, warehouse_height), (n_tiles_width, n_tiles_height), n_tilings, 
-                                target_area)
+    feedback: FeedbackConstruction = FeedbackConstruction((warehouse_width, warehouse_height), 
+                                                          (n_tiles_width, n_tiles_height), 
+                                                          n_tilings, 
+                                                          target_area)
