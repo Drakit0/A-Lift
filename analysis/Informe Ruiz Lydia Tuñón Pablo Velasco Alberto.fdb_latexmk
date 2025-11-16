@@ -1,7 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1763302058.7406 "c:/Users/lydia/Desktop/A-Lift/analysis/Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.tex" "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.pdf" "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto" 1763302061.33303 0
+["pdflatex"] 1763303196.33133 "c:/Users/lydia/Desktop/A-Lift/analysis/Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.tex" "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.pdf" "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto" 1763303199.13372 0
   "../fonts/Logo ICAI.png" 1762763780 166434 89fa15067ea21b9042a93709ccda1912 ""
-  "../plots/training_metrics_10000_0.1_0.05_9.10.png" 1762763337 112071 ef182fe7633612e6bc3232a6010dae62 ""
+  "../plots/qlearning_metrics_10000_0.1_0.05_8.90.png" 1763302137 90393 f2ede64e859240e5480aff43dcb4d45b ""
+  "../plots/sarsa_metrics_10000_0.1_0.05_9.10.png" 1763302137 112071 ef182fe7633612e6bc3232a6010dae62 ""
   "C:/Users/lydia/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1730299088 82705 9cc9f144eacd499bc23a611703921467 ""
   "C:/Users/lydia/AppData/Local/MiKTeX/fonts/tfm/public/rsfs/rsfs10.tfm" 1730299091 688 37338d6ab346c2f1466b29e195316aa4 ""
   "C:/Users/lydia/AppData/Local/MiKTeX/fonts/tfm/public/rsfs/rsfs5.tfm" 1730299093 684 3a51bd4fd9600428d5264cf25f04bb9a ""
@@ -35,6 +36,7 @@
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy10.tfm" 1136765053 1124 6c73e740cf17375f03eec0ee63599741 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy6.tfm" 1136765053 1116 933a60c408fc0a863a92debe84b2d294 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy8.tfm" 1136765053 1120 8b7d695260f3cff42e636090a8002094 ""
+  "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmti12.tfm" 1136765053 1484 ed72f8f5cf654cda15ecc8e32bfcbee5 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmtt12.tfm" 1136765053 772 9a936b7f5e2ff0557fce0f62822f0bbf ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmtt8.tfm" 1136765053 768 d7b9a2629a0c353102ad947dc9221d49 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1247596666 32080 340ef9bf63678554ee606688e7b5339d ""
@@ -47,6 +49,7 @@
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1247596667 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1247596667 32587 65067f817f408bc71a7312f3d9828a9b ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1247596667 32626 5abc8bb2f28aa647d4c70f8ea38cc0d3 ""
+  "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb" 1247596667 36118 fad905eba93cff5bce1e185fe980a177 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb" 1247596666 24252 1e4e051947e12dfb50fee0b7f4e26e3a ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt8.pfb" 1247596666 24287 6b803fa9eb1ddff9112e00519b09dd9e ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1247596673 34694 870c211f62cb72718a00e353f14f254d ""
@@ -233,10 +236,10 @@
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/tex/latex/wrapfig/wrapfig.sty" 1044403200 26220 3701aebf80ccdef248c0c20dd062fea9 ""
   "C:/Users/lydia/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.aux" 1763302061 6314 bbb6c6cc0b38c82d24f9715055440173 "pdflatex"
-  "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.tex" 1763302057 11447 7b63c59b52eafe6f0c43734d7b5ac7a7 ""
-  "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.toc" 1763302061 1054 ba7980dc9ed483138404998f78210268 "pdflatex"
-  "c:/Users/lydia/Desktop/A-Lift/analysis/Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.tex" 1763302057 11447 7b63c59b52eafe6f0c43734d7b5ac7a7 ""
+  "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.aux" 1763303198 6187 199c0a4c8a34dcffa80dc9e6516af0fb "pdflatex"
+  "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.tex" 1763303195 11123 8af1bbfccbab2da5af31d68e210ce86a ""
+  "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.toc" 1763303198 1019 531ae225b54ece18e6355b4fe0908404 "pdflatex"
+  "c:/Users/lydia/Desktop/A-Lift/analysis/Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.tex" 1763303195 11123 8af1bbfccbab2da5af31d68e210ce86a ""
   (generated)
   "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.aux"
   "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.log"

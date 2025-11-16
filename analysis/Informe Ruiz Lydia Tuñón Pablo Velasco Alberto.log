@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.10.30)  16 NOV 2025 15:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.10.30)  16 NOV 2025 15:26
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -840,27 +840,32 @@ l.170 \newpage
 
 ]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 188.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 187.
  [2]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 218.
+(hyperref)                removing `math shift' on input line 217.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\epsilon' on input line 218.
+(hyperref)                removing `\epsilon' on input line 217.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 218.
+(hyperref)                removing `math shift' on input line 217.
 
 [3]
-<../plots/training_metrics_10000_0.1_0.05_9.10.png, id=64, 867.24pt x 722.7pt>
-File: ../plots/training_metrics_10000_0.1_0.05_9.10.png Graphic file (type png)
-<use ../plots/training_metrics_10000_0.1_0.05_9.10.png>
-Package pdftex.def Info: ../plots/training_metrics_10000_0.1_0.05_9.10.png  used on input line 229.
+<../plots/qlearning_metrics_10000_0.1_0.05_8.90.png, id=64, 867.24pt x 722.7pt>
+File: ../plots/qlearning_metrics_10000_0.1_0.05_8.90.png Graphic file (type png)
+<use ../plots/qlearning_metrics_10000_0.1_0.05_8.90.png>
+Package pdftex.def Info: ../plots/qlearning_metrics_10000_0.1_0.05_8.90.png  used on input line 228.
 (pdftex.def)             Requested size: 426.79135pt x 355.65892pt.
- [4 <../plots/training_metrics_10000_0.1_0.05_9.10.png>] [5] (Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.aux
+<../plots/sarsa_metrics_10000_0.1_0.05_9.10.png, id=66, 867.24pt x 722.7pt>
+File: ../plots/sarsa_metrics_10000_0.1_0.05_9.10.png Graphic file (type png)
+<use ../plots/sarsa_metrics_10000_0.1_0.05_9.10.png>
+Package pdftex.def Info: ../plots/sarsa_metrics_10000_0.1_0.05_9.10.png  used on input line 235.
+(pdftex.def)             Requested size: 426.79135pt x 355.65892pt.
+ [4 <../plots/qlearning_metrics_10000_0.1_0.05_8.90.png>] [5 <../plots/sarsa_metrics_10000_0.1_0.05_9.10.png>] [6] (Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.aux
 LaTeX Info: Redefining \. on input line 15.
 LaTeX Info: Redefining \% on input line 15.
 )
@@ -870,17 +875,17 @@ L3 programming layer <2024-01-04>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 45835 strings out of 474486
- 1071292 string characters out of 5743754
- 1944447 words of memory out of 5000000
- 67557 multiletter control sequences out of 15000+600000
- 580140 words of font info for 97 fonts, out of 8000000 for 9000
+ 45847 strings out of 474486
+ 1071722 string characters out of 5743754
+ 1943447 words of memory out of 5000000
+ 67566 multiletter control sequences out of 15000+600000
+ 580487 words of font info for 98 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,12n,107p,932b,554s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.pdf" (6 pages, 465912 bytes).
+ 99i,12n,107p,906b,554s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt8.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/lydia/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
+Output written on "Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.pdf" (7 pages, 562332 bytes).
 PDF statistics:
- 176 PDF objects out of 1000 (max. 8388607)
- 17 named destinations out of 1000 (max. 500000)
- 109 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 191 PDF objects out of 1000 (max. 8388607)
+ 19 named destinations out of 1000 (max. 500000)
+ 114 words of extra memory for PDF output out of 10000 (max. 10000000)
 

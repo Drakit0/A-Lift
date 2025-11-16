@@ -399,6 +399,7 @@ INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmb7t.v
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmb8r.tfm
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmr7t.vf
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti12.tfm
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx8.tfm
@@ -421,13 +422,20 @@ INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\sym
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
-INPUT ..\plots\training_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\qlearning_metrics_10000_0.1_0.05_8.90.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
+INPUT ..\plots\sarsa_metrics_10000_0.1_0.05_9.10.png
 INPUT Informe Ruiz Lydia Tuñón Pablo Velasco Alberto.aux
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmbx12.pfb
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmbx12.pfb
@@ -449,6 +457,8 @@ INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\c
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy6.pfb
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy8.pfb
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy8.pfb
+INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti12.pfb
+INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti12.pfb
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt12.pfb
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt12.pfb
 INPUT C:\Users\lydia\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt8.pfb
