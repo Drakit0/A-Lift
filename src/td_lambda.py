@@ -1,5 +1,5 @@
 import numpy as np
-from navigation_environment import Navigation
+from warehouse_environment import WarehouseEnv
 from representation import FeedbackConstruction
 import pickle
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ class TDLambdaAgent:
         epsilon_history: History of epsilon values during training.
     """
     
-    def __init__(self, env: Navigation, feedback: FeedbackConstruction, 
+    def __init__(self, env: WarehouseEnv, feedback: FeedbackConstruction, 
                  learning_rate: float = 0.5, discount_factor: float = 0.9, 
                  epsilon: float = 0.5) -> None:
         """Initializes the TDLambdaAgent with the given parameters.
@@ -37,7 +37,7 @@ class TDLambdaAgent:
             epsilon: The probability of choosing a random action. Defaults to 0.5.
         """
 
-        self.env: Navigation = env
+        self.env: WarehouseEnv = env
         self.feedback: FeedbackConstruction = feedback
         self.learning_rate: float = learning_rate
         self.discount_factor: float = discount_factor
@@ -45,7 +45,6 @@ class TDLambdaAgent:
         self.num_actions: int = env.action_space.n
         self.feature_size: int = feedback.iht.size
 
-        #TODO: try other params (kaiming?)
         self.weights: np.ndarray = np.zeros((self.num_actions, self.feature_size))
         
         self.episode_returns: List[float] = []
@@ -275,7 +274,7 @@ class TDLambdaAgent:
 if __name__ == "__main__":
     
     # Instantiate environment and representation
-    env: Navigation = Navigation(render_mode="human")
+    env: WarehouseEnv = WarehouseEnv(render_mode="human")
     warehouse_width: float = 10.0
     warehouse_height: float = 10.0
 
