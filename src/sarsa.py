@@ -45,7 +45,6 @@ class SarsaAgent:
         self.num_actions: int = env.action_space.n
         self.feature_size: int = feedback.iht.size
 
-        #TODO: try other params (kaiming?)
         self.weights: np.ndarray = np.zeros((self.num_actions, self.feature_size))
         
         self.episode_returns: List[float] = []
