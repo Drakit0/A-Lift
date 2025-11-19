@@ -274,7 +274,7 @@ class QLAgent:
 if __name__ == "__main__":
     
     # Instantiate environment and representation
-    env: Navigation = Navigation()
+    env: Navigation = Navigation(render_mode="human")
     warehouse_width: float = 10.0
     warehouse_height: float = 10.0
 
