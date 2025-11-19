@@ -61,9 +61,9 @@ class FeedbackConstruction:
         # Get active tiles
         active_tiles: List[int] = self._get_active_tiles(norm_x, norm_y)
 
-        observation: List[int] = active_tiles
+        # observation: List[int] = active_tiles
 
-        return observation
+        return active_tiles
 
     def _get_active_tiles(self, norm_x: float, norm_y: float) -> List[int]:
         """Calculate the active tiles for given normalized x and y coordinates.

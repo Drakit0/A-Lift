@@ -149,11 +149,11 @@ class WarehouseEnv(gym.Env):
             new_pos: Tuple[float, float] = self._get_new_position(action)
             if not self._is_collision(new_pos):
                 self.agent_pos = new_pos
-                reward = REWARD_TO_BE_DESIGNED
+                reward = 0
             else:
                 self.collision = True
                 terminated = True
-                reward = REWARD_TO_BE_DESIGNED
+                reward = -1
 
         elif action == 4:  # Pick
             if not self.agent_has_object:
@@ -161,7 +161,7 @@ class WarehouseEnv(gym.Env):
                     if obj_pos is not None and self._distance(self.agent_pos, obj_pos) <= self.pickup_distance + self.agent_radius:
                         self.agent_has_object = True
                         self.object_positions[i] = None
-                        reward = REWARD_TO_BE_DESIGNED
+                        reward = 1
                         if self.just_pick:
                             terminated = True
                         break
@@ -169,10 +169,10 @@ class WarehouseEnv(gym.Env):
         elif action == 5:  # Drop
             if self.agent_has_object:
                 if self._is_in_area(self.agent_pos, self.delivery_area):
-                    reward = REWARD_TO_BE_DESIGNED
+                    reward = 1
                     self.delivery = True
                 else:
-                    reward = REWARD_TO_BE_DESIGNED
+                    reward = 0
                     self.object_positions.append(self.agent_pos)
                 self.agent_has_object = False
                 terminated = True
