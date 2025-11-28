@@ -234,8 +234,9 @@ class DQNAgent:
         
         avg_return: float = np.mean(total_returns)
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
+        success_rate: float = np.mean(np.where(total_returns > 0, 1, 0))
         
-        return avg_return
+        return avg_return, success_rate
     
     def plot_training_metrics(self, num_episodes: int, avg_return: float) -> None:
         """Plot training progress.
@@ -338,9 +339,11 @@ if __name__ == "__main__":
     agent.train(num_episodes, decay_start, decay_rate, min_epsilon, episodes_update)
     
     # Evaluate the agent
-    avg_return: float = agent.evaluate(num_episodes=5)
+    avg_return: float
+    success_rate: float
+    avg_return, success_rate = agent.evaluate(num_episodes=500)
 
-    print(f"Avg_return: {avg_return}\nSuccess needed: {success_threshold}")
+    print(f"Avg_return: {avg_return}\nSucess rate: {success_rate}\nSuccess needed: {success_threshold}")
     
     # Save the agent object into memory    
     with open(f'models/dqn_trained_env_{env_str}_{num_episodes}_{learning_rate}_{epsilon}_{avg_return:.2f}.pkl', 'wb') as f:
