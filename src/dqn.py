@@ -58,7 +58,8 @@ class DQNAgent:
         self.num_actions: int = env.action_space.n
         self.feature_size: int = feedback.iht.size
 
-        self.weights: np.ndarray = np.zeros((self.num_actions, self.feature_size))
+        self.dqn_target: DQN = DQN(self.feature_size, self.num_actions)
+        self.dqn_actual: DQN = DQN(self.feature_size, self.num_actions)
         
         self.episode_returns: List[float] = []
         self.episode_lengths: List[int] = []
@@ -87,7 +88,7 @@ class DQNAgent:
             q_values = self.get_q_values(state)
             return np.argmax(q_values)
 
-    def get_q_values(self, state: np.ndarray) -> np.ndarray:
+    def get_q_values(self, state: np.ndarray, actual_network: bool = True) -> np.ndarray:
         """Computes the Q-values of all actions for a given state.
 
         Args:
@@ -98,13 +99,18 @@ class DQNAgent:
         """
         
         features: List[int] = self.feedback.process_observation(state)
-        q_values: np.ndarray = np.zeros(self.num_actions)
+        # q_values: np.ndarray = np.zeros(self.num_actions)
         
         # Calculate the values of each action for the given state (linear approximation)
-        for action in range(self.num_actions):
-            for feature in features:
-                q_values[action] += self.weights[action][feature]
-            
+        # for action in range(self.num_actions):
+        #     for feature in features:
+        #         q_values[action] += self.weights[action][feature]
+
+        if actual_network:
+            q_values = self.dqn_actual(features).numpy()
+        else:
+            q_values = self.dqn_target(features).numpy()
+
         return q_values
     
     def update(self, state: np.ndarray, action: int, reward: float, 
