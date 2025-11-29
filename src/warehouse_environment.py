@@ -149,7 +149,7 @@ class WarehouseEnv(gym.Env):
             new_pos: Tuple[float, float] = self._get_new_position(action)
             if not self._is_collision(new_pos):
                 self.agent_pos = new_pos
-                reward = 0
+                reward = max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
             else:
                 self.collision = True
                 terminated = True
@@ -172,7 +172,7 @@ class WarehouseEnv(gym.Env):
                     reward = 1
                     self.delivery = True
                 else:
-                    reward = 0
+                    reward = max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
                     self.object_positions.append(self.agent_pos)
                 self.agent_has_object = False
                 terminated = True

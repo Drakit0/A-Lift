@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from typing import Optional, Tuple, List
 import torch
 import torch.nn as nn
+from collections import deque
+import random
+from tqdm import trange
 
 class DQN(nn.Module):
     def __init__(self, input_size: int, num_actions: int):
@@ -18,6 +21,20 @@ class DQN(nn.Module):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         return self.fc3(x)
+
+# Replay Buffer to store experiences
+class ReplayBuffer:
+    def __init__(self, capacity):
+        self.buffer = deque(maxlen=capacity)
+    
+    def push(self, experience):
+        self.buffer.append(experience)
+    
+    def sample(self, batch_size):
+        return random.sample(self.buffer, batch_size)
+    
+    def __len__(self):
+        return len(self.buffer)
 
 class DQNAgent:
     """DQNAgent is an implementation of the DQN
@@ -56,7 +73,7 @@ class DQNAgent:
         self.discount_factor: float = discount_factor
         self.epsilon: float = epsilon
         self.num_actions: int = env.action_space.n
-        self.feature_size: int = feedback.iht.size
+        self.feature_size: int = feedback.observation_size
 
         self.dqn_target: DQN = DQN(self.feature_size, self.num_actions)
         self.dqn_actual: DQN = DQN(self.feature_size, self.num_actions)
@@ -86,7 +103,7 @@ class DQNAgent:
         
         else:
             q_values = self.get_q_values(state)
-            return np.argmax(q_values)
+            return int(np.argmax(q_values))
 
     def get_q_values(self, state: np.ndarray, actual_network: bool = True) -> np.ndarray:
         """Computes the Q-values of all actions for a given state.
@@ -98,53 +115,17 @@ class DQNAgent:
             A numpy array of Q-values for each action in the given state.
         """
         
-        features: List[int] = self.feedback.process_observation(state)
-        # q_values: np.ndarray = np.zeros(self.num_actions)
-        
-        # Calculate the values of each action for the given state (linear approximation)
-        # for action in range(self.num_actions):
-        #     for feature in features:
-        #         q_values[action] += self.weights[action][feature]
-
+        features: np.ndarray = self.feedback.process_observation(state)  # returns np.array shape (feature_size,)
+        input_tensor = torch.tensor(features, dtype=torch.float32)
         if actual_network:
-            q_values = self.dqn_actual(features).numpy()
+            q_values = self.dqn_actual(input_tensor).detach().numpy()
         else:
-            q_values = self.dqn_target(features).numpy()
-
+            q_values = self.dqn_target(input_tensor).detach().numpy()
         return q_values
-    
-    def update(self, state: np.ndarray, action: int, reward: float, 
-               next_state: np.ndarray, next_action: int, terminated: bool) -> None:
-        """Update the weights for the given state-action pair using the q-learning algorithm.
-        
-        Args:
-            state: The current state.
-            action: The action taken in the current state.
-            reward: The reward received after taking the action.
-            next_state: The state resulting from taking the action.
-            next_action: The action to be taken in the next state.
-            terminated: Whether the episode has terminated.
-        """
-        
-        qs_current: np.ndarray = self.get_q_values(state)       
-        q_current: float = qs_current[action]
-        
-        # td_error
-        if terminated:
-            td_error: float = reward - q_current
-            
-        else:
-            q_next: float = np.max(self.get_q_values(next_state))
-            td_error: float = reward + self.discount_factor * q_next - q_current
-        
-        features: List[int] = self.feedback.process_observation(state)
-        
-        self.weights[action][features] += self.learning_rate * td_error
-
                 
     def train(self, num_episodes: int, decay_start: float, decay_rate: float, 
-              min_epsilon: float) -> None:
-        """Train the agent using the QLearning algorithm.
+              min_epsilon: float, batch_size: int = 4, c: int = 4*4) -> None:
+        """Train the DQN agent.
         
         Args:
             num_episodes: The number of episodes to train the agent.
@@ -153,37 +134,139 @@ class DQNAgent:
             min_epsilon: The minimum value for epsilon.
         """
         
-        success_window: int = 100  # Track success over last N episodes
+        success_window: int = 500  # Track success over last N episodes
         recent_successes: List[int] = []
 
-        for episode in range(num_episodes):
+        replay_buffer: ReplayBuffer = ReplayBuffer(10_000)
+
+        # The optimizer and loss function
+        optimizer = torch.optim.Adam(self.dqn_actual.parameters(), lr=self.learning_rate)
+        loss_fn = nn.MSELoss()
+
+        # Initialize the target network with the same weights as the Q-network
+        self.dqn_target.load_state_dict(self.dqn_actual.state_dict())
+        global_step = 0
+
+        progress_bar = trange(num_episodes)
+
+        for episode in progress_bar:
             # Episode setup
             state, _ = self.env.reset()
             
             # Exponential decrease of epsilon to minimum value from marked start
             if episode >= num_episodes*decay_start:
                 self.epsilon *= decay_rate
-                self.epsilon = np.max([min_epsilon,self.epsilon])
+                self.epsilon = float(np.max([min_epsilon,self.epsilon]))
             
             self.epsilon_history.append(self.epsilon)
             
-            # First action
-            action: int = self.get_action(state, self.epsilon)            
+            # First action        
             n_steps: int = 0
             
             # Episode generation
             total_undiscounted_return: float = 0
             
-            while True:                                        
+            while True:
+                action: int = self.get_action(state, self.epsilon)    
+
                 next_state, reward, terminated, truncated, _ = self.env.step(action)  
-                total_undiscounted_return += reward  
+                total_undiscounted_return += reward
+
+                # Store experience in raplay buffer
+                replay_buffer.push([state, action, reward, next_state, terminated or truncated])
+                    
+                # Vectorized minibatch update
+                if len(replay_buffer) >= batch_size:
+                    batch = replay_buffer.sample(batch_size)
+                    states = [b[0] for b in batch]
+                    actions = [b[1] for b in batch]
+                    rewards = [b[2] for b in batch]
+                    next_states = [b[3] for b in batch]
+                    dones = [b[4] for b in batch]
+
+                    # Process observations to normalized vectors and stack into tensors
+                    s_feats = np.stack([self.feedback.process_observation(s) for s in states], axis=0)
+                    s_next_feats = np.stack([self.feedback.process_observation(sn) for sn in next_states], axis=0)
+
+                    s_tensor = torch.tensor(s_feats, dtype=torch.float32)
+                    s_next_tensor = torch.tensor(s_next_feats, dtype=torch.float32)
+                    actions_tensor = torch.tensor(actions, dtype=torch.long)
+                    rewards_tensor = torch.tensor(rewards, dtype=torch.float32)
+                    dones_tensor = torch.tensor(dones, dtype=torch.bool)
+
+                    # Current Q(s,a; theta)
+                    q_values = self.dqn_actual(s_tensor)                         # (B, num_actions)
+                    current_q = q_values.gather(1, actions_tensor.unsqueeze(1)).squeeze(1)  # (B,)
+
+                    '''
+                    # Target: r + gamma * max_a' Q_target(s', a')  (0 if done)
+                    with torch.no_grad():
+                        q_next = self.dqn_target(s_next_tensor)                  # (B, num_actions)
+                        q_next_max, _ = torch.max(q_next, dim=1)                # (B,)
+                        target = rewards_tensor + (~dones_tensor).float() * (self.discount_factor * q_next_max)
+                    '''
+                    # Target: r + gamma * max_a' Q_target(s', a')  (0 if done)
+                    with torch.no_grad():
+                        # Double DQN:
+                        # select actions with online network, evaluate with target network
+                        q_next_online = self.dqn_actual(s_next_tensor)         # (B, num_actions)
+                        next_actions = torch.argmax(q_next_online, dim=1)     # (B,)
+                        q_next_target = self.dqn_target(s_next_tensor)        # (B, num_actions)
+                        q_next_selected = q_next_target.gather(1, next_actions.unsqueeze(1)).squeeze(1)  # (B,)
+                        target = rewards_tensor + (~dones_tensor).float() * (self.discount_factor * q_next_selected)
+
+                    loss = loss_fn(current_q, target)
+
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+                
+                '''
+                # Sample a mini-batch of experiences from the buffer
+                if len(replay_buffer) >= batch_size:
+                    batch: List[List] = replay_buffer.sample(batch_size)
+
+                    # Calculate target for each transition in the batch
+                    for transition in batch:
+                        state, action, reward, next_state, done = transition
+
+                        # Process observations -> tensors
+                        s_feat = self.feedback.process_observation(state)
+                        s_tensor = torch.tensor(s_feat, dtype=torch.float32)
+
+                        if done:
+                            target = torch.tensor(state, dtype=torch.float32)
+                        else:
+                            next_state_features = self.feedback.process_observation(next_state)
+                            next_state_features_tensor = torch.tensor(next_state_features, dtype=torch.float32)
+                            q_next_state = torch.max(self.dqn_target(next_state_features_tensor)).detach()
+                            target = torch.tensor(reward, dtype=torch.float32) + self.discount_factor * q_next_state
+
+                        # if done:
+                        #     target: torch.Tensor = torch.tensor(reward)
+                        # else:
+                        #     # Target is: reward + gamma * max_a' Q(s', a'; θ^-)
+                        #     target: torch.Tensor = reward + self.discount_factor * torch.max(self.dqn_target(torch.tensor(next_state)))
                         
-                next_action = self.get_action(next_state, self.epsilon)
-                self.update(state, action, reward, next_state, next_action, terminated)  
-                  
-                state = next_state
-                action = next_action                
+                        # Compute the loss for the current transition
+                        current_q_value: torch.Tensor = self.dqn_actual(s_tensor)[action]  # Q(s,a; theta)
+                        
+                        loss: torch.Tensor = loss_fn(current_q_value, target)
+                    
+                        # Backpropagate and update Q-network (θ)
+                        optimizer.zero_grad()
+                        loss.backward()
+                        optimizer.step()
+                '''
+                
+                # Periodically update the target network every C steps
+                if global_step % c == 0:
+                    self.dqn_target.load_state_dict(self.dqn_actual.state_dict())
+                
+                # Update state
+                state = next_state 
                 n_steps += 1
+                global_step += 1
                 
                 if terminated or truncated:
                     break
@@ -193,7 +276,7 @@ class DQNAgent:
             self.episode_lengths.append(n_steps)
             
             # Track success (reached target)
-            success: bool = terminated and total_undiscounted_return > -20  # Adjust threshold
+            success: bool = terminated and reward > 0  # Adjust threshold
             recent_successes.append(1 if success else 0)
             
             if len(recent_successes) > success_window:
@@ -201,16 +284,8 @@ class DQNAgent:
             
             current_success_rate: float = np.mean(recent_successes) * 100
             self.success_rate.append(current_success_rate)
-            
-            episodes_update: int = 1000 # Display updates
-            
-            if episode % episodes_update == 0:                      
-                print(f"Episode {episode}, Total undiscounted return: {total_undiscounted_return}, Epsilon: {self.epsilon}")
-                # print(f"Steps: {n_steps}")
-                # print(f"Success Rate (last {success_window}): {current_success_rate:.1f}%")
-                # print(f"Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
-                # you can save the current state of the agent, if you find it useful    
 
+            progress_bar.set_description(f"Epsilon: {self.epsilon:.3f} | Success Rate (last {success_window}): {current_success_rate:.1f}%")
     
     def evaluate(self, num_episodes: int) -> float:
         """Evaluate the agent's performance over a specified number of episodes.
@@ -240,11 +315,11 @@ class DQNAgent:
         
         avg_return: float = np.mean(total_returns)
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
-        success_rate: float = np.mean(np.where(total_returns > 0, 1, 0))
+        success_rate: float = np.mean(np.where(np.array(total_returns) > 0, 1, 0))
         
         return avg_return, success_rate
     
-    def plot_training_metrics(self, num_episodes: int, avg_return: float) -> None:
+    def plot_training_metrics(self, num_episodes: int, avg_return: float, window: int = 500) -> None:
         """Plot training progress.
         
         Args:
@@ -262,7 +337,6 @@ class DQNAgent:
         axes[0, 0].grid(True)
         
         # Moving average of returns
-        window: int = 100
         if len(self.episode_returns) >= window:
             moving_avg: np.ndarray = np.convolve(self.episode_returns, np.ones(window)/window, mode='valid')
             axes[0, 1].plot(moving_avg)
@@ -286,11 +360,10 @@ class DQNAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/qlearning_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
+        plt.savefig(f'plots/dqn_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
         plt.show()
 
-
-if __name__ == "__main__":
+def main():
     env_str = "1"
     match env_str:
         case "1":
@@ -312,37 +385,32 @@ if __name__ == "__main__":
     warehouse_height: float = 10.0
 
     # Design the tiles
-    n_tiles_width: int = 10 # Number of tiles along W
-    n_tiles_height: int = 10 # Number of tiles along H  
-    n_tilings: int = 8 # Overlapping tiles
-    
     target_area: Tuple[float, float, float, float] = (2.5, 8, 1.0, 2.0)
     
     feedback: FeedbackConstruction = FeedbackConstruction((warehouse_width, warehouse_height), 
-                                 (n_tiles_width, n_tiles_height), 
-                                 n_tilings, target_area)
+                                                          target_area=target_area, 
+                                                          use_tiles=False)
     
     #Initialize the agent
-    learning_rate: float = 0.1
+    learning_rate: float = 1e-4
     discount_factor: float = 0.99 # Gamma: importance of future rewards
     epsilon: float = 0.5
-    lambda_value: float = 0.5
     
     agent: DQNAgent = DQNAgent(env,
                        feedback, 
                        learning_rate, 
                        discount_factor, 
-                       epsilon,
-                       lambda_value)
+                       epsilon)
     
     # Train the agent
     decay_start: float = 0.6 # Start epsilon decay at n% of total episodes
-    decay_rate: float = 0.9 # Control of the (exponential) decrease of epsilon
+    decay_rate: float = 0.9999 # Control of the (exponential) decrease of epsilon
     min_epsilon: float = 0.001 
-    num_episodes: int = 1000
-    episodes_update: int = 10
+    num_episodes: int = 10_000
+    batch_size: int = 32
+    c: int = 8*batch_size
     
-    agent.train(num_episodes, decay_start, decay_rate, min_epsilon, episodes_update)
+    agent.train(num_episodes, decay_start, decay_rate, min_epsilon, batch_size, c)
     
     # Evaluate the agent
     avg_return: float
@@ -357,3 +425,7 @@ if __name__ == "__main__":
     
     # Plot the training results
     agent.plot_training_metrics(num_episodes, avg_return)
+
+
+if __name__ == "__main__":
+    main()
