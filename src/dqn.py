@@ -9,6 +9,7 @@ import torch.nn as nn
 from collections import deque
 import random
 from tqdm import trange
+import math
 
 class DQN(nn.Module):
     def __init__(self, input_size: int, num_actions: int):
@@ -319,7 +320,7 @@ class DQNAgent:
         
         return avg_return, success_rate
     
-    def plot_training_metrics(self, num_episodes: int, avg_return: float, window: int = 500) -> None:
+    def plot_training_metrics(self, num_episodes: int, avg_return: float, window: int = 500, env_str: str = "1") -> None:
         """Plot training progress.
         
         Args:
@@ -360,7 +361,7 @@ class DQNAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/dqn_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
+        plt.savefig(f'plots/dqn_metrics_env_{env_str}_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
         plt.show()
 
 def main():
@@ -381,11 +382,9 @@ def main():
 
     # Instantiate environment and representation
     env: WarehouseEnv = WarehouseEnv(just_pick=just_pick, random_objects=random_objects)
-    warehouse_width: float = 10.0
-    warehouse_height: float = 10.0
-
-    # Design the tiles
-    target_area: Tuple[float, float, float, float] = (2.5, 8, 1.0, 2.0)
+    warehouse_width: float = env.width
+    warehouse_height: float = env.height
+    target_area: Tuple[float, float, float, float] = env.delivery_area
     
     feedback: FeedbackConstruction = FeedbackConstruction((warehouse_width, warehouse_height), 
                                                           target_area=target_area, 
@@ -404,11 +403,14 @@ def main():
     
     # Train the agent
     decay_start: float = 0.6 # Start epsilon decay at n% of total episodes
-    decay_rate: float = 0.9999 # Control of the (exponential) decrease of epsilon
-    min_epsilon: float = 0.001 
-    num_episodes: int = 10_000
+    decay_end: float = 0.8 # End epsilon decay at n% of total episodes (min_epsilon will be reached here)
+    min_epsilon: float = 0.001
+    decay_rate: float = math.exp(math.log(min_epsilon)/(math.log(decay_end - decay_start)))/100 # Control of the (exponential) decrease of epsilon
+    num_episodes: int = 50_000
     batch_size: int = 32
     c: int = 8*batch_size
+
+    print(f"Decay rate: {decay_rate}")
     
     agent.train(num_episodes, decay_start, decay_rate, min_epsilon, batch_size, c)
     
@@ -424,7 +426,7 @@ def main():
         pickle.dump(agent, f)
     
     # Plot the training results
-    agent.plot_training_metrics(num_episodes, avg_return)
+    agent.plot_training_metrics(num_episodes, avg_return, env_str=env_str)
 
 
 if __name__ == "__main__":
