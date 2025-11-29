@@ -400,6 +400,7 @@ class DQNAgent:
         """
         
         total_returns: List[float] = []
+        successes: List[int] = []
         
         for _  in range(num_episodes):
             state, _ = self.env.reset()
@@ -413,11 +414,12 @@ class DQNAgent:
                 state = next_state
                 total_undiscounted_return += reward
             
+            successes.append(1 if reward > 0 else 0)
             total_returns.append(total_undiscounted_return)
         
-        avg_return: float = np.mean(total_returns)
+        avg_return: float = float(np.mean(total_returns))
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
-        success_rate: float = np.mean(np.where(np.array(total_returns) > 0, 1, 0))
+        success_rate: float = float(np.mean(np.array(successes)))
         
         return avg_return, success_rate
     
