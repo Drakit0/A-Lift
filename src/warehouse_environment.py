@@ -139,7 +139,8 @@ class WarehouseEnv(gym.Env):
         designed_reward: float = 10
 
         self.steps += 1
-        reward: float = -0.1 # Reduce number of steps
+        step_penalty: float = -0.1
+        reward: float = step_penalty # Reduce number of steps
         terminated: bool = False
         truncated: bool = False
         
@@ -156,26 +157,29 @@ class WarehouseEnv(gym.Env):
             new_pos: Tuple[float, float] = self._get_new_position(action)
             
             if not self._is_collision(new_pos):
-                old_pos = self.agent_pos
-                self.agent_pos = new_pos
+                # old_pos = self.agent_pos
+                # self.agent_pos = new_pos
                 
-                # Reward shaping based on progress toward goal
-                if not self.agent_has_object:
-                    # Calculate distance to nearest object
-                    old_min_dist = self._get_min_object_distance(old_pos)
-                    new_min_dist = self._get_min_object_distance(self.agent_pos)
+                # # Reward shaping based on progress toward goal
+                # if not self.agent_has_object:
+                #     # Calculate distance to nearest object
+                #     old_min_dist = self._get_min_object_distance(old_pos)
+                #     new_min_dist = self._get_min_object_distance(self.agent_pos)
                     
-                    if old_min_dist is not None and new_min_dist is not None:
-                        # Reward for getting closer to objects
-                        progress = old_min_dist - new_min_dist
-                        reward = 0.5 * progress  # Small shaping reward
+                #     if old_min_dist is not None and new_min_dist is not None:
+                #         # Reward for getting closer to objects
+                #         progress = old_min_dist - new_min_dist
+                #         reward = 0.5 * progress  # Small shaping reward
                         
-                else:
-                    # Has object, reward for getting closer to delivery
-                    old_dist = self._distance_to_area(old_pos, self.delivery_area)
-                    new_dist = self._distance_to_area(self.agent_pos, self.delivery_area)
-                    progress = old_dist - new_dist
-                    reward = 0.5 * progress
+                # else:
+                #     # Has object, reward for getting closer to delivery
+                #     old_dist = self._distance_to_area(old_pos, self.delivery_area)
+                #     new_dist = self._distance_to_area(self.agent_pos, self.delivery_area)
+                #     progress = old_dist - new_dist
+                #     reward = 0.5 * progress
+                
+                self.agent_pos = new_pos
+                reward += step_penalty
 
             else:
                 self.collision = True
@@ -197,10 +201,10 @@ class WarehouseEnv(gym.Env):
                         break
                     
                 if not self.agent_has_object:
-                    reward = -0.1 # Don't pick if you are not in range
+                    reward = -1.0 # Don't pick if you are not in range
                     
             else:
-                reward = -0.1 # Object was already picked
+                reward = -1.0 # Object was already picked
                     
 
         elif action == 5:  # Drop
@@ -218,14 +222,12 @@ class WarehouseEnv(gym.Env):
                     
                     reward = -designed_reward
                     self.object_positions.append(self.agent_pos)
-                    self.agent_has_object = False
-                    terminated = True
                     
                 self.agent_has_object = False
                 terminated = True
                 
             else:
-                reward = -0.1 # Don't drop if you don't have an object
+                reward = -1.0 # Don't drop if you don't have an object
 
         obs: np.ndarray = self._get_obs()
         info: Dict[str, Any] = {}

@@ -315,7 +315,7 @@ class TDLambdaAgent:
 
 if __name__ == "__main__":
     # Select environment variant
-    env_variant:str = "1"  # Change to "2" or "3" for other variants
+    env_variant:str = "2"  # Change to "2" or "3" for other variants
     workspace_def:str = "v" #tile-coding or vectorized space
     
     if env_variant == "1":
@@ -341,12 +341,12 @@ if __name__ == "__main__":
             
         else:
             # Agent params
-            learning_rate: float = 0.01
-            epsilon: float = 0.5
+            learning_rate: float = 0.0005
+            epsilon: float = 1.0
             
             # Training params
-            decay_start: float = 0.6 # Start epsilon decay at n% of total episodes
-            num_episodes: int = 15000
+            decay_start: float = 0.0 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 50000
 
     elif env_variant == "2":
         just_pick = False
@@ -366,17 +366,19 @@ if __name__ == "__main__":
             epsilon: float = 0.5
             
             # Training params
-            decay_start: float = 0.4 # Start epsilon decay at n% of total episodes
-            num_episodes: int = 50000
+            decay_start: float = 0.3 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 15000
             
         else:
             # Agent params
-            learning_rate: float = 0.005
-            epsilon: float = 0.5
+            learning_rate: float = 0.0001
+            epsilon: float = 0.8
+            lambda_value: float = 0.9
             
             # Training params
-            decay_start: float = 0.3 # Start epsilon decay at n% of total episodes
-            num_episodes: int = 30000
+            decay_rate: float = 0.9995 # Control of the (exponential) decrease of epsilon
+            decay_start: float = 0.5 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 50000
             
     else:
         just_pick = False
