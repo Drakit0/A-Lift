@@ -148,8 +148,13 @@ class WarehouseEnv(gym.Env):
             new_pos: Tuple[float, float] = self._get_new_position(action)
             if not self._is_collision(new_pos):
                 self.agent_pos = new_pos
-                reward = 0
+                # reward = 0
                 
+                if not self.agent_has_object:
+                    reward = 0.1*max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
+                else:
+                    reward = 0.1*(-1 + 2.71828**(-2*self._distance_to_area(self.agent_pos)/(self.width**2 + self.height**2)**0.5))
+
             else:
                 self.collision = True
                 terminated = True
@@ -172,7 +177,10 @@ class WarehouseEnv(gym.Env):
                     reward = designed_reward
                     self.delivery = True
                 else:
-                    reward = 0
+                    if not self.agent_has_object:
+                        reward = 0.1*max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
+                    else:
+                        reward = 0.1*(-1 + 2.71828**(-2*self._distance_to_area(self.agent_pos)/(self.width**2 + self.height**2)**0.5))
                     self.object_positions.append(self.agent_pos)
                 self.agent_has_object = False
                 terminated = True
@@ -329,6 +337,42 @@ class WarehouseEnv(gym.Env):
             area[0] - margin <= pos[0] <= area[0] + area[2] + margin and
             area[1] - margin <= pos[1] <= area[1] + area[3] + margin
         )
+    
+    def _distance_to_area(self, pos: Tuple[float, float], area: Optional[Tuple[float, float, float, float]] = None) -> float:
+        """Compute the shortest Euclidean distance from a point to a rectangular area.
+        
+        If the point is inside the rectangle, returns 0. If outside, returns the distance
+        to the closest point on the rectangle edges.
+
+        Args:
+            pos: (x, y) point.
+            area: (x, y, width, height) rectangle. If None, uses self.delivery_area.
+
+        Returns:
+            Shortest distance from pos to the rectangle.
+        """
+        if area is None:
+            area = self.delivery_area
+
+        x, y = pos
+        rx, ry, rw, rh = area
+        x_min, x_max = rx, rx + rw
+        y_min, y_max = ry, ry + rh
+
+        # Distance along each axis: zero if within the interval, otherwise distance to nearest edge
+        dx = 0.0
+        if x < x_min:
+            dx = x_min - x
+        elif x > x_max:
+            dx = x - x_max
+
+        dy = 0.0
+        if y < y_min:
+            dy = y_min - y
+        elif y > y_max:
+            dy = y - y_max
+
+        return float(np.hypot(dx, dy))
 
     def render(self) -> Optional[np.ndarray]:
         """Renders the current state of the warehouse environment.

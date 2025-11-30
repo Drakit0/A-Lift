@@ -16,8 +16,8 @@ class FeedbackConstruction:
         iht: Index hash table for tile coding.
     """
     
-    def __init__(self, dims: Tuple[float, float], n_tiles: Tuple[int, int], 
-                 n_tilings: int, target_area: Tuple[float, float, float, float]) -> None:
+    def __init__(self, dims: Tuple[float, float] = (10.0, 10.0), n_tiles: Tuple[int, int] = (10, 10), 
+                 n_tilings: int = 8, target_area: Tuple[float, float, float, float] = (2.5, 8, 1.0, 2.0), use_tiles: bool = True) -> None:
         """Initialize the FeedbackConstruction.
         
         Args:
@@ -29,12 +29,18 @@ class FeedbackConstruction:
         
         self.width: float = dims[0]
         self.height: float = dims[1]
-        self.scale_width: float = dims[0] / n_tiles[0]
-        self.scale_height: float = dims[1] / n_tiles[1]
-        self.target_area: Tuple[float, float, float, float] = target_area        
-        self.num_tilings: int = n_tilings
-        self.max_size: int = n_tiles[0] * n_tiles[1] * self.num_tilings + 2000
-        self.iht: IHT = IHT(self.max_size)
+        self.target_area: Tuple[float, float, float, float] = target_area
+        self.use_tiles = use_tiles
+
+        if self.use_tiles:
+            self.scale_width: float = dims[0] / n_tiles[0]
+            self.scale_height: float = dims[1] / n_tiles[1]  
+            self.num_tilings: int = n_tilings
+            self.max_size: int = n_tiles[0] * n_tiles[1] * self.num_tilings + 2000
+            self.iht: IHT = IHT(self.max_size)
+            self.observation_size = self.iht.size
+        else:
+            self.observation_size = 11
 
         
     def process_observation(self, obs: np.ndarray) -> List[int]:
@@ -49,21 +55,39 @@ class FeedbackConstruction:
         Returns:
             Array of active tiles as produced by _get_active_tiles.
         """
-        
-        agent_pos: np.ndarray = obs[:2]
-        collision: float = obs[2]
-        target_area: float = obs[3]
-        
-        # Normalize agent position
-        norm_x: float = agent_pos[0] / self.scale_width
-        norm_y: float = agent_pos[1] / self.scale_height
-        
-        # Get active tiles
-        active_tiles: List[int] = self._get_active_tiles(norm_x, norm_y)
+        if self.use_tiles:
+            agent_pos: np.ndarray = obs[:2]
+            collision: float = obs[2]
+            target_area: float = obs[3]
+            
+            # Normalize agent position
+            norm_x: float = agent_pos[0] / self.scale_width
+            norm_y: float = agent_pos[1] / self.scale_height
+            
+            # Get active tiles
+            active_tiles: List[int] = self._get_active_tiles(norm_x, norm_y)
 
-        # observation: List[int] = active_tiles
+            # observation: List[int] = active_tiles
 
-        return active_tiles
+            return active_tiles
+        
+        # obs expected length 11: [agent_x, agent_y, obj1_x,obj1_y, obj2_x,obj2_y, obj3_x,obj3_y, has_object, collision, delivery]
+        vec = np.array(obs, dtype=np.float32).copy()
+
+        # Normalize x coordinates (indices 0,2,4,6) by width
+        vec[0] = vec[0] / (self.width if self.width != 0 else 1.0)
+        vec[2] = vec[2] / (self.width if self.width != 0 else 1.0)
+        vec[4] = vec[4] / (self.width if self.width != 0 else 1.0)
+        vec[6] = vec[6] / (self.width if self.width != 0 else 1.0)
+
+        # Normalize y coordinates (indices 1,3,5,7) by height
+        vec[1] = vec[1] / (self.height if self.height != 0 else 1.0)
+        vec[3] = vec[3] / (self.height if self.height != 0 else 1.0)
+        vec[5] = vec[5] / (self.height if self.height != 0 else 1.0)
+        vec[7] = vec[7] / (self.height if self.height != 0 else 1.0)
+
+        # flags at indices 8,9,10 are already 0/1 floats; keep them
+        return vec
 
     def _get_active_tiles(self, norm_x: float, norm_y: float) -> List[int]:
         """Calculate the active tiles for given normalized x and y coordinates.
