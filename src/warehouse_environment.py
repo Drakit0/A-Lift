@@ -67,7 +67,7 @@ class WarehouseEnv(gym.Env):
             (4.9, 1.0, 0.2, 5.0), 
             (7.9, 1.0, 0.2, 5.0)
         ]
-        self.delivery_area: Tuple[float, float, float, float] = (2.5, 9, 5.0, 2.0)
+        self.delivery_area: Tuple[float, float, float, float] = (2.5, 9.0, 5.0, 1.0)
 
         # Agent properties
         self.agent_radius: float = 0.2
@@ -136,9 +136,8 @@ class WarehouseEnv(gym.Env):
         """
         
         # --- Reward definition ---
-        REWARD_TO_BE_DESIGNED: float = 0.0
+        designed_reward: float = 10
 
-        # --- Initialize state variables ---
         self.steps += 1
         reward: float = 0.0
         terminated: bool = False
@@ -150,6 +149,7 @@ class WarehouseEnv(gym.Env):
             if not self._is_collision(new_pos):
                 self.agent_pos = new_pos
                 reward = 0
+                
             else:
                 self.collision = True
                 terminated = True
@@ -161,7 +161,7 @@ class WarehouseEnv(gym.Env):
                     if obj_pos is not None and self._distance(self.agent_pos, obj_pos) <= self.pickup_distance + self.agent_radius:
                         self.agent_has_object = True
                         self.object_positions[i] = None
-                        reward = 1
+                        reward = designed_reward
                         if self.just_pick:
                             terminated = True
                         break
@@ -169,7 +169,7 @@ class WarehouseEnv(gym.Env):
         elif action == 5:  # Drop
             if self.agent_has_object:
                 if self._is_in_area(self.agent_pos, self.delivery_area):
-                    reward = 1
+                    reward = designed_reward
                     self.delivery = True
                 else:
                     reward = 0
@@ -180,7 +180,6 @@ class WarehouseEnv(gym.Env):
         if self.steps >= self.max_steps:
             truncated = True
 
-        # --- Prepare outputs ---
         obs: np.ndarray = self._get_obs()
         info: Dict[str, Any] = {}
 
@@ -230,10 +229,13 @@ class WarehouseEnv(gym.Env):
         
         if action == 0:  # Up
             y = min(self.height - self.agent_radius, y + self.agent_velocity)
+            
         elif action == 1:  # Down
             y = max(self.agent_radius, y - self.agent_velocity)
+            
         elif action == 2:  # Left
             x = max(self.agent_radius, x - self.agent_velocity)
+            
         elif action == 3:  # Right
             x = min(self.width - self.agent_radius, x + self.agent_velocity)
         

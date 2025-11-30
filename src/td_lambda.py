@@ -93,7 +93,7 @@ class TDLambdaAgent:
         for action in range(self.num_actions):
             for feature in features:
                 q_values[action] += self.weights[action][feature]
-            
+                        
         return q_values
     
     def update(self, state: np.ndarray, action: int, reward: float, 
@@ -123,14 +123,25 @@ class TDLambdaAgent:
         
         features: List[int] = self.feedback.process_observation(state)
 
-        for feature in range(self.feature_size):
-            self.elegibility_traces[feature] *= self.lambda_value * self.discount_factor
-            if feature in features:
-                self.elegibility_traces[feature] += 1
+        # for feature in range(self.feature_size):
+        #     self.elegibility_traces[feature] *= self.lambda_value * self.discount_factor
+        #     if feature in features:
+        #         self.elegibility_traces[feature] += 1
 
-        for action_p in range(self.num_actions):
-            for feature in range(self.feature_size):
-                self.weights[action_p][feature] += self.learning_rate * td_error * self.elegibility_traces[feature]
+        # for action_p in range(self.num_actions):
+        #     for feature in range(self.feature_size):
+        #         self.weights[action_p][feature] += self.learning_rate * td_error * self.elegibility_traces[feature]
+        # Update eligibility traces
+        self.elegibility_traces *= self.lambda_value * self.discount_factor
+        for feature in features:
+            self.elegibility_traces[feature] += 1
+
+        # Update weights ONLY for the action taken
+        self.weights[action] += self.learning_rate * td_error * self.elegibility_traces
+        
+        # Reset traces if terminal state
+        if terminated:
+            self.elegibility_traces = np.zeros(self.feature_size)
 
                 
     def train(self, num_episodes: int, decay_start: float, decay_rate: float, 
@@ -150,6 +161,10 @@ class TDLambdaAgent:
         for episode in range(num_episodes):
             # Episode setup
             state, _ = self.env.reset()
+            
+            # Reset elegibility traces
+            self.elegibility_traces = np.zeros(self.feature_size)
+
             
             # Exponential decrease of epsilon to minimum value from marked start
             if episode >= num_episodes*decay_start:
@@ -184,7 +199,7 @@ class TDLambdaAgent:
             self.episode_lengths.append(n_steps)
             
             # Track success (reached target)
-            success: bool = terminated and total_undiscounted_return > -20  # Adjust threshold
+            success: bool = terminated and total_undiscounted_return > 5  # Adjust threshold
             recent_successes.append(1 if success else 0)
             
             if len(recent_successes) > success_window:
@@ -281,7 +296,7 @@ class TDLambdaAgent:
 if __name__ == "__main__":
     
     # Instantiate environment and representation
-    env: WarehouseEnv = WarehouseEnv(render_mode="human")
+    env: WarehouseEnv = WarehouseEnv(just_pick=True, random_objects=False, render_mode="human")
     warehouse_width: float = 10.0
     warehouse_height: float = 10.0
 
@@ -290,7 +305,7 @@ if __name__ == "__main__":
     n_tiles_height: int = 10 # Number of tiles along H  
     n_tilings: int = 8 # Overlapping tiles
     
-    target_area: Tuple[float, float, float, float] = (2.5, 8, 1.0, 2.0)
+    target_area: Tuple[float, float, float, float] = (2.5, 9.0, 5.0, 1.0)
     
     feedback: FeedbackConstruction = FeedbackConstruction((warehouse_width, warehouse_height), 
                                  (n_tiles_width, n_tiles_height), 
@@ -299,8 +314,8 @@ if __name__ == "__main__":
     #Initialize the agent
     learning_rate: float = 0.1
     discount_factor: float = 0.99 # Gamma: importance of future rewards
-    epsilon: float = 0.5
-    lambda_value: float = 0.5
+    epsilon: float = 0.3
+    lambda_value: float = 0.8
     
     agent: TDLambdaAgent = TDLambdaAgent(env,
                        feedback, 
@@ -308,13 +323,13 @@ if __name__ == "__main__":
                        discount_factor, 
                        epsilon,
                        lambda_value)
-    
+    3
     # Train the agent
-    decay_start: float = 0.6 # Start epsilon decay at n% of total episodes
-    decay_rate: float = 0.9 # Control of the (exponential) decrease of epsilon
-    min_epsilon: float = 0.001 
-    num_episodes: int = 1000
-    episodes_update: int = 10
+    decay_start: float = 0.2 # Start epsilon decay at n% of total episodes
+    decay_rate: float = 0.9995 # Control of the (exponential) decrease of epsilon
+    min_epsilon: float = 0.05 
+    num_episodes: int = 10000
+    episodes_update: int = 100
     
     agent.train(num_episodes, decay_start, decay_rate, min_epsilon, episodes_update)
     
