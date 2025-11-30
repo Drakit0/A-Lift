@@ -15,7 +15,7 @@ from warehouse_environment import WarehouseEnv
 
 
 def set_seed(seed: int) -> None:
-    """Fix random seeds for reproducibility."""
+    """Fija semillas para reproducibilidad."""
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -52,27 +52,40 @@ class ReplayBuffer:
 
 # ----------------------- Q-Network ----------------------- #
 
-class DQN(nn.Module):
-    """Two-layer MLP for Q-value approximation."""
+class DuelingDQN(nn.Module):
+    """Arquitectura dueling para estabilizar en recompensas escasas."""
 
     def __init__(self, input_dim: int, num_actions: int) -> None:
         super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(input_dim, 128),
+        self.feature = nn.Sequential(
+            nn.Linear(input_dim, 256),
             nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+        )
+        self.value_head = nn.Sequential(
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+        )
+        self.adv_head = nn.Sequential(
             nn.Linear(128, 64),
             nn.ReLU(),
             nn.Linear(64, num_actions),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.net(x)
+        feat = self.feature(x)
+        values = self.value_head(feat)
+        advantages = self.adv_head(feat)
+        advantages = advantages - advantages.mean(dim=1, keepdim=True)
+        return values + advantages
 
 
 # ----------------------- Feature Encoder ----------------------- #
 
 class FeatureEncoder:
-    """Wrap FeedbackConstruction to output dense vectors compatible with the DQN."""
+    """Envuelve FeedbackConstruction para producir vectores densos."""
 
     def __init__(self, feedback: FeedbackConstruction) -> None:
         self.feedback = feedback
@@ -95,34 +108,35 @@ class FeatureEncoder:
 
 @dataclass
 class TrainConfig:
-    # curriculum: primero entorno medio (objetos fijos), luego entorno duro (objetos aleatorios)
-    num_episodes_medium: int = 4000
-    num_episodes_hard: int = 6000
+    # entrenamiento directo en entorno 3 (objetos aleatorios + entrega)
+    num_episodes: int = 9000
 
     batch_size: int = 64
-    gamma: float = 0.99
-    lr: float = 3e-4
-    buffer_capacity: int = 150_000
-    min_buffer: int = 4_000
-    target_update: int = 1_000       # pasos
+    gamma: float = 0.995
+    lr: float = 5e-4
+    buffer_capacity: int = 200_000
+    min_buffer: int = 3_000
+    warmup_random_steps: int = 3_000
+    target_update: int = 400       # pasos
     epsilon_start: float = 1.0
-    epsilon_final: float = 0.10
-    epsilon_decay_steps: int = 400_000
-    max_grad_norm: float = 10.0
-    max_steps_per_episode: int = 400
-    seed: int = 7
+    epsilon_final: float = 0.01
+    epsilon_decay_steps: int = 150_000
+    max_grad_norm: float = 5.0
+    max_steps_per_episode: int = 320
+    seed: int = 11
     device: str = "cpu"
     # reward shaping y refuerzos
     use_shaping: bool = True
-    shaping_coeff: float = 0.8       # peso de phi(s') - phi(s)
-    pickup_bonus: float = 2.0        # extra por recoger
-    success_bonus: float = 10.0      # extra por entregar correctamente
+    shaping_coeff: float = 1.0     # peso de phi(s') - phi(s)
+    pickup_bonus: float = 5.0      # extra por recoger
+    success_bonus: float = 40.0    # extra por entregar correctamente
+    delivery_zone_bonus: float = 3.0  # refuerzo por llevar el objeto dentro de la zona antes de soltar
 
 
 # ----------------------- Agent ----------------------- #
 
 class DQNAgent:
-    """DQN con Double-Q target, replay buffer, shaping y curriculum medio->dificil."""
+    """Dueling DQN con Double-Q target, replay y shaping (sin curriculum)."""
 
     def __init__(self, env: WarehouseEnv, encoder: FeatureEncoder, config: TrainConfig) -> None:
         self.env = env
@@ -131,8 +145,8 @@ class DQNAgent:
         self.device = torch.device(config.device)
 
         self.num_actions = env.action_space.n
-        self.policy_net = DQN(self.encoder.size, self.num_actions).to(self.device)
-        self.target_net = DQN(self.encoder.size, self.num_actions).to(self.device)
+        self.policy_net = DuelingDQN(self.encoder.size, self.num_actions).to(self.device)
+        self.target_net = DuelingDQN(self.encoder.size, self.num_actions).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
 
@@ -150,7 +164,9 @@ class DQNAgent:
     # --------- Epsilon --------- #
 
     def _epsilon(self) -> float:
-        frac = min(1.0, self.total_steps / max(1, self.config.epsilon_decay_steps))
+        # decay comienza despues del warmup para priorizar exploracion amplia inicial
+        steps_for_decay = max(1, self.config.epsilon_decay_steps)
+        frac = min(1.0, max(0, self.total_steps - self.config.warmup_random_steps) / steps_for_decay)
         return self.config.epsilon_final + (self.config.epsilon_start - self.config.epsilon_final) * (1.0 - frac)
 
     def act(self, state_vec: np.ndarray, epsilon: float) -> int:
@@ -160,6 +176,30 @@ class DQNAgent:
         with torch.no_grad():
             q_values = self.policy_net(state_t)
         return int(torch.argmax(q_values, dim=1).item())
+
+    # --------- Heuristicas de accion --------- #
+
+    def _force_action_if_needed(self, obs: np.ndarray, action: int) -> int:
+        """
+        Evita quedarse sin recoger/soltar: si ya esta en rango, fuerza Pick/Drop.
+        """
+        agent_pos = (float(obs[0]), float(obs[1]))
+        has_object = obs[8] > 0.5
+
+        if has_object:
+            if self.env._is_in_area(agent_pos, self.env.delivery_area, margin=0.25):
+                return 5  # Drop
+            return action
+
+        for i in range(3):
+            ox, oy = float(obs[2 + 2 * i]), float(obs[3 + 2 * i])
+            # si ya fue recogido, la obs lo pone en el agente; saltar
+            if abs(ox - agent_pos[0]) < 1e-6 and abs(oy - agent_pos[1]) < 1e-6:
+                continue
+            dist = np.hypot(ox - agent_pos[0], oy - agent_pos[1])
+            if dist <= (self.env.pickup_distance + self.env.agent_radius + 0.1):
+                return 4  # Pick
+        return action
 
     # --------- Potencial / shaping --------- #
 
@@ -189,9 +229,7 @@ class DQNAgent:
 
     @staticmethod
     def _is_success(terminated: bool, next_obs: np.ndarray, info: Any) -> bool:
-        """
-        Exito = entrega correcta (delivery=True en obs[10]) cuando el episodio termina.
-        """
+        """Exito = entrega correcta (delivery=True en obs[10]) cuando el episodio termina."""
         if not terminated:
             return False
 
@@ -232,7 +270,7 @@ class DQNAgent:
         if self.total_steps % self.config.target_update == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-    # --------- Entrenamiento (una fase) --------- #
+    # --------- Entrenamiento --------- #
 
     def train(self, num_episodes: int, phase_name: str = "") -> None:
         success_window = 500
@@ -250,7 +288,13 @@ class DQNAgent:
 
             for step in range(self.config.max_steps_per_episode):
                 epsilon = self._epsilon()
-                action = self.act(state_vec, epsilon)
+
+                if self.total_steps < self.config.warmup_random_steps:
+                    action = self.env.action_space.sample()
+                else:
+                    action = self.act(state_vec, epsilon)
+
+                action = self._force_action_if_needed(prev_obs, action)
 
                 next_obs, base_reward, terminated, truncated, info = self.env.step(action)
                 done = terminated or truncated
@@ -260,11 +304,18 @@ class DQNAgent:
 
                 reward = float(base_reward + shaping)
 
-                # bonus por recoger
                 has_obj_prev = prev_obs[8] > 0.5
                 has_obj_now = next_obs[8] > 0.5
                 if (not has_obj_prev) and has_obj_now:
                     reward += self.config.pickup_bonus
+
+                # si ya lleva objeto y pisa la zona de entrega, refuerzo para que aprenda a dejarlo
+                if has_obj_now and self.env._is_in_area(
+                    (float(next_obs[0]), float(next_obs[1])),
+                    self.env.delivery_area,
+                    margin=0.25,
+                ):
+                    reward += self.config.delivery_zone_bonus
 
                 if self._is_success(terminated, next_obs, info):
                     success = True
@@ -315,6 +366,7 @@ class DQNAgent:
 
             while not done:
                 action = self.act(state_vec, epsilon=0.0)  # greedy
+                action = self._force_action_if_needed(prev_obs, action)
                 next_obs, base_reward, terminated, truncated, info = self.env.step(action)
                 done = terminated or truncated
 
@@ -388,34 +440,26 @@ def main() -> None:
     config = TrainConfig(device=device)
     set_seed(config.seed)
 
-    # Fase 1: entorno medio (objetos fijos, recoger + entregar)
-    env_medium = WarehouseEnv(just_pick=False, random_objects=False)
-
-    # Fase 2: entorno dificil (objetos aleatorios + entrega)
+    # Entrenamiento directo en entorno 3 (objetos aleatorios + entrega)
     env_hard = WarehouseEnv(just_pick=False, random_objects=True)
 
     feedback = FeedbackConstruction(
-        dims=(env_medium.width, env_medium.height),
-        target_area=env_medium.delivery_area,
+        dims=(env_hard.width, env_hard.height),
+        target_area=env_hard.delivery_area,
         use_tiles=False,   # vector denso normalizado
     )
     encoder = FeatureEncoder(feedback)
 
-    agent = DQNAgent(env_medium, encoder, config)
+    agent = DQNAgent(env_hard, encoder, config)
 
-    # Entrenamiento en entorno medio
-    agent.train(num_episodes=config.num_episodes_medium, phase_name="MEDIUM")
+    # Entrenamiento completo en entorno aleatorio (sin curriculum)
+    agent.train(num_episodes=config.num_episodes, phase_name="HARD")
 
-    # Curriculum: pasamos al entorno dificil con la misma red
-    agent.env = env_hard
-    agent.train(num_episodes=config.num_episodes_hard, phase_name="HARD")
-
-    agent.env = env_hard
     avg_return, success_rate = agent.evaluate(num_episodes=300)
     print(f"[HARD ENV] Evaluation -> Avg return: {avg_return:.3f} | Success rate: {success_rate*100:.1f}%")
 
-    agent.save(f"models/dqn_env3_medium_hard.pt")
-    plot_metrics(agent, env_tag="3_hard")
+    agent.save("models/dqn_env3_direct.pt")
+    plot_metrics(agent, env_tag="3_direct")
 
 
 if __name__ == "__main__":
