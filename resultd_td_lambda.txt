@@ -1,0 +1,805 @@
+(.venv) PS D:\4\semestre 1\RL\A-Lift> & "D:/4/semestre 1/RL/A-Lift/.venv/Scripts/python.exe" "d:/4/semestre 1/RL/A-Lift/src/td_lambda.py"
+Episode 0, Total undiscounted return: -44.199999999999996, Epsilon: 0.5
+Episode 100, Total undiscounted return: -28.99999999999998, Epsilon: 0.5
+Episode 200, Total undiscounted return: -12.0, Epsilon: 0.5
+Episode 300, Total undiscounted return: -12.2, Epsilon: 0.5
+Episode 400, Total undiscounted return: -18.6, Epsilon: 0.5
+Episode 500, Total undiscounted return: -13.2, Epsilon: 0.5
+Episode 600, Total undiscounted return: -11.0, Epsilon: 0.5
+Episode 700, Total undiscounted return: -20.399999999999995, Epsilon: 0.5
+Episode 800, Total undiscounted return: -13.0, Epsilon: 0.5
+Episode 900, Total undiscounted return: -11.8, Epsilon: 0.5
+Episode 1000, Total undiscounted return: -20.999999999999996, Epsilon: 0.5
+Episode 1100, Total undiscounted return: -16.200000000000003, Epsilon: 0.5
+Episode 1200, Total undiscounted return: -16.6, Epsilon: 0.5
+Episode 1300, Total undiscounted return: -17.2, Epsilon: 0.5
+Episode 1400, Total undiscounted return: -12.8, Epsilon: 0.5
+Episode 1500, Total undiscounted return: -12.2, Epsilon: 0.5
+Episode 1600, Total undiscounted return: -12.6, Epsilon: 0.5
+Episode 1700, Total undiscounted return: -16.200000000000003, Epsilon: 0.5
+Episode 1800, Total undiscounted return: -13.6, Epsilon: 0.5
+Episode 1900, Total undiscounted return: -16.400000000000002, Epsilon: 0.5
+Episode 2000, Total undiscounted return: -25.599999999999994, Epsilon: 0.5
+Episode 2100, Total undiscounted return: -21.4, Epsilon: 0.5
+Episode 2200, Total undiscounted return: -12.6, Epsilon: 0.5
+Episode 2300, Total undiscounted return: -13.600000000000001, Epsilon: 0.5
+Episode 2400, Total undiscounted return: -13.4, Epsilon: 0.5
+Episode 2500, Total undiscounted return: -11.0, Epsilon: 0.5
+Episode 2600, Total undiscounted return: -10.8, Epsilon: 0.5
+Episode 2700, Total undiscounted return: -12.4, Epsilon: 0.5
+Episode 2800, Total undiscounted return: -21.799999999999997, Epsilon: 0.5
+Episode 2900, Total undiscounted return: -13.400000000000002, Epsilon: 0.5
+Episode 3000, Total undiscounted return: -13.0, Epsilon: 0.5
+Episode 3100, Total undiscounted return: -16.800000000000004, Epsilon: 0.5
+Episode 3200, Total undiscounted return: -10.2, Epsilon: 0.5
+Episode 3300, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 3400, Total undiscounted return: -11.2, Epsilon: 0.5
+Episode 3500, Total undiscounted return: -12.6, Epsilon: 0.5
+Episode 3600, Total undiscounted return: -0.8000000000000007, Epsilon: 0.5
+Episode 3700, Total undiscounted return: -10.6, Epsilon: 0.5
+Episode 3800, Total undiscounted return: -16.6, Epsilon: 0.5
+Episode 3900, Total undiscounted return: -19.8, Epsilon: 0.5
+Episode 4000, Total undiscounted return: -14.0, Epsilon: 0.5
+Episode 4100, Total undiscounted return: -15.200000000000001, Epsilon: 0.5
+Episode 4200, Total undiscounted return: -15.600000000000001, Epsilon: 0.5
+Episode 4300, Total undiscounted return: -10.8, Epsilon: 0.5
+Episode 4400, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 4500, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 4600, Total undiscounted return: -16.6, Epsilon: 0.5
+Episode 4700, Total undiscounted return: -11.6, Epsilon: 0.5
+Episode 4800, Total undiscounted return: -13.4, Epsilon: 0.5
+Episode 4900, Total undiscounted return: -12.8, Epsilon: 0.5
+Episode 5000, Total undiscounted return: -21.0, Epsilon: 0.5
+Episode 5100, Total undiscounted return: -16.400000000000002, Epsilon: 0.5
+Episode 5200, Total undiscounted return: -12.0, Epsilon: 0.5
+Episode 5300, Total undiscounted return: -12.8, Epsilon: 0.5
+Episode 5400, Total undiscounted return: -11.0, Epsilon: 0.5
+Episode 5500, Total undiscounted return: -12.6, Epsilon: 0.5
+Episode 5600, Total undiscounted return: -16.200000000000003, Epsilon: 0.5
+Episode 5700, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 5800, Total undiscounted return: -14.600000000000001, Epsilon: 0.5
+Episode 5900, Total undiscounted return: -13.0, Epsilon: 0.5
+Episode 6000, Total undiscounted return: -11.6, Epsilon: 0.5
+Episode 6100, Total undiscounted return: -14.8, Epsilon: 0.5
+Episode 6200, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 6300, Total undiscounted return: -10.2, Epsilon: 0.5
+Episode 6400, Total undiscounted return: -13.0, Epsilon: 0.5
+Episode 6500, Total undiscounted return: -21.199999999999996, Epsilon: 0.5
+Episode 6600, Total undiscounted return: -10.6, Epsilon: 0.5
+Episode 6700, Total undiscounted return: -14.4, Epsilon: 0.5
+Episode 6800, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 6900, Total undiscounted return: -19.599999999999998, Epsilon: 0.5
+Episode 7000, Total undiscounted return: -11.4, Epsilon: 0.5
+Episode 7100, Total undiscounted return: -11.4, Epsilon: 0.5
+Episode 7200, Total undiscounted return: -17.000000000000004, Epsilon: 0.5
+Episode 7300, Total undiscounted return: -14.600000000000001, Epsilon: 0.5
+Episode 7400, Total undiscounted return: -10.8, Epsilon: 0.5
+Episode 7500, Total undiscounted return: -15.4, Epsilon: 0.5
+Episode 7600, Total undiscounted return: -11.8, Epsilon: 0.5
+Episode 7700, Total undiscounted return: -13.200000000000001, Epsilon: 0.5
+Episode 7800, Total undiscounted return: -11.0, Epsilon: 0.5
+Episode 7900, Total undiscounted return: -18.4, Epsilon: 0.5
+Episode 8000, Total undiscounted return: -15.400000000000002, Epsilon: 0.5
+Episode 8100, Total undiscounted return: -11.4, Epsilon: 0.5
+Episode 8200, Total undiscounted return: -12.6, Epsilon: 0.5
+Episode 8300, Total undiscounted return: -10.2, Epsilon: 0.5
+Episode 8400, Total undiscounted return: -10.0, Epsilon: 0.5
+Episode 8500, Total undiscounted return: -21.199999999999992, Epsilon: 0.5
+Episode 8600, Total undiscounted return: -18.2, Epsilon: 0.5
+Episode 8700, Total undiscounted return: -13.4, Epsilon: 0.5
+Episode 8800, Total undiscounted return: -12.2, Epsilon: 0.5
+Episode 8900, Total undiscounted return: -11.6, Epsilon: 0.5
+Episode 9000, Total undiscounted return: -16.0, Epsilon: 0.499
+Episode 9100, Total undiscounted return: -16.0, Epsilon: 0.40846483553952556
+Episode 9200, Total undiscounted return: -10.4, Epsilon: 0.33435575525517364
+Episode 9300, Total undiscounted return: -14.400000000000002, Epsilon: 0.2736925222084134
+Episode 9400, Total undiscounted return: -10.6, Epsilon: 0.2240356133712575
+Episode 9500, Total undiscounted return: -10.0, Epsilon: 0.18338811617372228
+Episode 9600, Total undiscounted return: -10.4, Epsilon: 0.1501154242741539
+Episode 9700, Total undiscounted return: -10.0, Epsilon: 0.12287950318254177
+Episode 9800, Total undiscounted return: -10.4, Epsilon: 0.10058508228183473
+Episode 9900, Total undiscounted return: -10.4, Epsilon: 0.08233560940276403
+Episode 10000, Total undiscounted return: -10.6, Epsilon: 0.06739719670089499
+Episode 10100, Total undiscounted return: -10.8, Epsilon: 0.05516910794840911
+Episode 10200, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 10300, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 10400, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 10500, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 10600, Total undiscounted return: -12.4, Epsilon: 0.05
+Episode 10700, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 10800, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 10900, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 11000, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 11100, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 11200, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 11300, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 11400, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 11500, Total undiscounted return: -12.8, Epsilon: 0.05
+Episode 11600, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 11700, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 11800, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 11900, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 12000, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 12100, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 12200, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 12300, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 12400, Total undiscounted return: -12.6, Epsilon: 0.05
+Episode 12500, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 12600, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 12700, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 12800, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 12900, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 13000, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 13100, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 13200, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 13300, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 13400, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 13500, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 13600, Total undiscounted return: -13.200000000000001, Epsilon: 0.05
+Episode 13700, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 13800, Total undiscounted return: -12.2, Epsilon: 0.05
+Episode 13900, Total undiscounted return: -12.6, Epsilon: 0.05
+Episode 14000, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 14100, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 14200, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 14300, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 14400, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 14500, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 14600, Total undiscounted return: -12.6, Epsilon: 0.05
+Episode 14700, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 14800, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 14900, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 15000, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 15100, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 15200, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 15300, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 15400, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 15500, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 15600, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 15700, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 15800, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 15900, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 16000, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 16100, Total undiscounted return: -12.4, Epsilon: 0.05
+Episode 16200, Total undiscounted return: -12.2, Epsilon: 0.05
+Episode 16300, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 16400, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 16500, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 16600, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 16700, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 16800, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 16900, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 17000, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 17100, Total undiscounted return: -12.4, Epsilon: 0.05
+Episode 17200, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 17300, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 17400, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 17500, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 17600, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 17700, Total undiscounted return: -12.4, Epsilon: 0.05
+Episode 17800, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 17900, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 18000, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 18100, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 18200, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 18300, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 18400, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 18500, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 18600, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 18700, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 18800, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 18900, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 19000, Total undiscounted return: -12.0, Epsilon: 0.05
+Episode 19100, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 19200, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 19300, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 19400, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 19500, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 19600, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 19700, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 19800, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 19900, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 20000, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 20100, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 20200, Total undiscounted return: -12.2, Epsilon: 0.05
+Episode 20300, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 20400, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 20500, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 20600, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 20700, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 20800, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 20900, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 21000, Total undiscounted return: -12.0, Epsilon: 0.05
+Episode 21100, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 21200, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 21300, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 21400, Total undiscounted return: -12.6, Epsilon: 0.05
+Episode 21500, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 21600, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 21700, Total undiscounted return: -12.0, Epsilon: 0.05
+Episode 21800, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 21900, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 22000, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 22100, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 22200, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 22300, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 22400, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 22500, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 22600, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 22700, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 22800, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 22900, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 23000, Total undiscounted return: -12.4, Epsilon: 0.05
+Episode 23100, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 23200, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 23300, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 23400, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 23500, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 23600, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 23700, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 23800, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 23900, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 24000, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 24100, Total undiscounted return: -12.0, Epsilon: 0.05
+Episode 24200, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 24300, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 24400, Total undiscounted return: -12.8, Epsilon: 0.05
+Episode 24500, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 24600, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 24700, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 24800, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 24900, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 25000, Total undiscounted return: -12.4, Epsilon: 0.05
+Episode 25100, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 25200, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 25300, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 25400, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 25500, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 25600, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 25700, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 25800, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 25900, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 26000, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 26100, Total undiscounted return: -12.600000000000001, Epsilon: 0.05
+Episode 26200, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 26300, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 26400, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 26500, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 26600, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 26700, Total undiscounted return: -12.6, Epsilon: 0.05
+Episode 26800, Total undiscounted return: -11.6, Epsilon: 0.05
+Episode 26900, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 27000, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 27100, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 27200, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 27300, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 27400, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 27500, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 27600, Total undiscounted return: -12.0, Epsilon: 0.05
+Episode 27700, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 27800, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 27900, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 28000, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 28100, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 28200, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 28300, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 28400, Total undiscounted return: -11.8, Epsilon: 0.05
+Episode 28500, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 28600, Total undiscounted return: -11.2, Epsilon: 0.05
+Episode 28700, Total undiscounted return: -10.0, Epsilon: 0.05
+Episode 28800, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 28900, Total undiscounted return: -10.6, Epsilon: 0.05
+Episode 29000, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 29100, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 29200, Total undiscounted return: -11.0, Epsilon: 0.05
+Episode 29300, Total undiscounted return: -10.2, Epsilon: 0.05
+Episode 29400, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 29500, Total undiscounted return: -10.8, Epsilon: 0.05
+Episode 29600, Total undiscounted return: -10.4, Epsilon: 0.05
+Episode 29700, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 29800, Total undiscounted return: -11.4, Epsilon: 0.05
+Episode 29900, Total undiscounted return: -10.4, Epsilon: 0.05
+  Ep 0, Step 0, Pos: [8.307296  1.5771766], Action: 3
+  Ep 1, Step 0, Pos: [5.8273683 6.949679 ], Action: 0
+  Ep 2, Step 0, Pos: [1.6245723 4.9283566], Action: 2
+  Ep 3, Step 0, Pos: [9.359965 8.867801], Action: 0
+  Ep 4, Step 0, Pos: [4.278067  1.3946432], Action: 1
+  Ep 5, Step 0, Pos: [3.901875 6.239006], Action: 2
+  Ep 6, Step 0, Pos: [2.9139867 3.8829613], Action: 2
+  Ep 7, Step 0, Pos: [8.335897  1.0593413], Action: 3
+  Ep 8, Step 0, Pos: [4.4388776 0.6288631], Action: 1
+  Ep 9, Step 0, Pos: [4.4257464  0.53614813], Action: 1
+  Ep 10, Step 0, Pos: [3.7110076 8.490496 ], Action: 0
+  Ep 11, Step 0, Pos: [3.8151972 2.7718368], Action: 1
+  Ep 12, Step 0, Pos: [9.1972275 4.7174497], Action: 3
+  Ep 13, Step 0, Pos: [2.3602316  0.23121938], Action: 1
+  Ep 14, Step 0, Pos: [0.37841985 5.0236096 ], Action: 2
+  Ep 15, Step 0, Pos: [9.601166   0.62475675], Action: 3
+  Ep 16, Step 0, Pos: [4.3028855 2.3318317], Action: 1
+  Ep 17, Step 0, Pos: [2.388462 7.109399], Action: 2
+  Ep 18, Step 0, Pos: [2.370343  5.6062617], Action: 2
+  Ep 19, Step 0, Pos: [2.4641607 2.6954596], Action: 2
+  Ep 20, Step 0, Pos: [5.982064  6.5678535], Action: 3
+  Ep 21, Step 0, Pos: [1.1228738 4.0027614], Action: 2
+  Ep 22, Step 0, Pos: [5.9421573 4.2740173], Action: 3
+  Ep 23, Step 0, Pos: [8.968414 4.38159 ], Action: 3
+  Ep 24, Step 0, Pos: [0.3889016 7.6073303], Action: 2
+  Ep 25, Step 0, Pos: [5.6212916 4.27777  ], Action: 3
+  Ep 26, Step 0, Pos: [8.488725 6.673415], Action: 3
+  Ep 27, Step 0, Pos: [4.7788134 0.5841278], Action: 1
+  Ep 28, Step 0, Pos: [7.8973804  0.33993077], Action: 3
+  Ep 29, Step 0, Pos: [4.322119  3.8977187], Action: 1
+  Ep 30, Step 0, Pos: [8.392284  7.4154305], Action: 3
+  Ep 31, Step 0, Pos: [0.9504848 5.0563407], Action: 2
+  Ep 32, Step 0, Pos: [3.4596906 2.3966465], Action: 1
+  Ep 33, Step 0, Pos: [2.3487968 5.390338 ], Action: 2
+  Ep 34, Step 0, Pos: [5.24932  8.568765], Action: 0
+  Ep 35, Step 0, Pos: [7.3890686 4.628818 ], Action: 3
+  Ep 36, Step 0, Pos: [3.4806406 0.7813199], Action: 1
+  Ep 37, Step 0, Pos: [0.45841694 3.4492285 ], Action: 2
+  Ep 38, Step 0, Pos: [3.453489  1.0925965], Action: 1
+  Ep 39, Step 0, Pos: [5.718535 3.32061 ], Action: 3
+  Ep 40, Step 0, Pos: [7.1791654 1.9697349], Action: 3
+  Ep 41, Step 0, Pos: [1.3068936 5.3898525], Action: 2
+  Ep 42, Step 0, Pos: [6.0111904 8.295333 ], Action: 0
+  Ep 43, Step 0, Pos: [6.9178996 3.3866127], Action: 3
+  Ep 44, Step 0, Pos: [8.968888  3.2493567], Action: 3
+  Ep 45, Step 0, Pos: [7.5365353 6.6248574], Action: 3
+  Ep 46, Step 0, Pos: [9.418822 8.439622], Action: 0
+  Ep 47, Step 0, Pos: [8.295019  6.3143277], Action: 3
+  Ep 48, Step 0, Pos: [3.4491758 6.610228 ], Action: 0
+  Ep 49, Step 0, Pos: [4.400779  3.3928976], Action: 1
+  Ep 50, Step 0, Pos: [5.939044 4.627264], Action: 3
+  Ep 51, Step 0, Pos: [2.4781322  0.33920234], Action: 1
+  Ep 52, Step 0, Pos: [7.3928685 8.632313 ], Action: 0
+  Ep 53, Step 0, Pos: [2.3550076 3.546448 ], Action: 2
+  Ep 54, Step 0, Pos: [1.0549213 0.9979422], Action: 2
+  Ep 55, Step 0, Pos: [0.5076732  0.42757055], Action: 2
+  Ep 56, Step 0, Pos: [4.638449  3.1797833], Action: 1
+  Ep 57, Step 0, Pos: [2.8795645 2.624358 ], Action: 2
+  Ep 58, Step 0, Pos: [5.6728835 9.354128 ], Action: 0
+  Ep 59, Step 0, Pos: [1.1946877 4.2903833], Action: 2
+  Ep 60, Step 0, Pos: [6.5748467 1.9671853], Action: 3
+  Ep 61, Step 0, Pos: [2.4401734 2.2172275], Action: 2
+  Ep 62, Step 0, Pos: [7.0656443 8.674135 ], Action: 0
+  Ep 63, Step 0, Pos: [8.161029 8.252827], Action: 0
+  Ep 64, Step 0, Pos: [3.4372597 6.310853 ], Action: 2
+  Ep 65, Step 0, Pos: [3.6768315 5.5339746], Action: 2
+  Ep 66, Step 0, Pos: [4.9144673 9.064866 ], Action: 0
+  Ep 67, Step 0, Pos: [7.3422914 9.739165 ], Action: 0
+  Ep 68, Step 0, Pos: [8.431568  4.2297635], Action: 3
+  Ep 69, Step 0, Pos: [3.2393463 6.135254 ], Action: 2
+  Ep 70, Step 0, Pos: [7.1599116 1.4573953], Action: 3
+  Ep 71, Step 0, Pos: [8.320696 4.72826 ], Action: 3
+  Ep 72, Step 0, Pos: [9.387599 9.744018], Action: 0
+  Ep 73, Step 0, Pos: [9.065251  1.5177032], Action: 3
+  Ep 74, Step 0, Pos: [5.9176455 4.5725036], Action: 3
+  Ep 75, Step 0, Pos: [1.9618278 8.549957 ], Action: 0
+  Ep 76, Step 0, Pos: [1.3830812 6.657609 ], Action: 2
+  Ep 77, Step 0, Pos: [6.61746   7.0871115], Action: 0
+  Ep 78, Step 0, Pos: [6.31952   7.4660625], Action: 0
+  Ep 79, Step 0, Pos: [2.3678887 4.4498916], Action: 2
+  Ep 80, Step 0, Pos: [2.6470678 6.6709495], Action: 2
+  Ep 81, Step 0, Pos: [5.8784385 1.6212286], Action: 1
+  Ep 82, Step 0, Pos: [3.3260381 2.6923964], Action: 1
+  Ep 83, Step 0, Pos: [8.391827 4.405343], Action: 3
+  Ep 84, Step 0, Pos: [6.6195126 2.8086128], Action: 3
+  Ep 85, Step 0, Pos: [7.7635436 6.7938643], Action: 3
+  Ep 86, Step 0, Pos: [8.391257  6.3837347], Action: 3
+  Ep 87, Step 0, Pos: [0.5195583 7.614253 ], Action: 2
+  Ep 88, Step 0, Pos: [9.248281 4.403776], Action: 3
+  Ep 89, Step 0, Pos: [4.5455637 1.3904523], Action: 1
+  Ep 90, Step 0, Pos: [2.6088219 7.3622303], Action: 0
+  Ep 91, Step 0, Pos: [1.1745107 5.1059484], Action: 2
+  Ep 92, Step 0, Pos: [2.9340305 1.8197474], Action: 1
+  Ep 93, Step 0, Pos: [5.9353633 9.643815 ], Action: 0
+  Ep 94, Step 0, Pos: [3.455547 7.79972 ], Action: 0
+  Ep 95, Step 0, Pos: [3.012584 2.439668], Action: 1
+  Ep 96, Step 0, Pos: [6.901406 4.178038], Action: 3
+  Ep 97, Step 0, Pos: [3.9901724 6.7085204], Action: 0
+  Ep 98, Step 0, Pos: [4.6949162 7.0113435], Action: 0
+  Ep 99, Step 0, Pos: [1.3732772 8.278017 ], Action: 0
+  Ep 100, Step 0, Pos: [6.2384424 2.5541654], Action: 3
+  Ep 101, Step 0, Pos: [2.4808326 7.824862 ], Action: 0
+  Ep 102, Step 0, Pos: [8.93793   5.6729307], Action: 3
+  Ep 103, Step 0, Pos: [1.234998  5.1472735], Action: 2
+  Ep 104, Step 0, Pos: [1.6000473 9.462682 ], Action: 0
+  Ep 105, Step 0, Pos: [2.7369263 9.684492 ], Action: 0
+  Ep 106, Step 0, Pos: [2.1489658 9.547808 ], Action: 0
+  Ep 107, Step 0, Pos: [4.5298457 5.18125  ], Action: 2
+  Ep 108, Step 0, Pos: [1.5753154 3.1642227], Action: 2
+  Ep 109, Step 0, Pos: [5.9215164 7.9041114], Action: 0
+  Ep 110, Step 0, Pos: [0.49773383 8.52065   ], Action: 0
+  Ep 111, Step 0, Pos: [0.38911211 6.9074683 ], Action: 2
+  Ep 112, Step 0, Pos: [5.6867447 0.7529454], Action: 1
+  Ep 113, Step 0, Pos: [0.40602702 4.8270187 ], Action: 2
+  Ep 114, Step 0, Pos: [2.6970007 9.368888 ], Action: 0
+  Ep 115, Step 0, Pos: [7.649628  6.5783896], Action: 3
+  Ep 116, Step 0, Pos: [2.777675  6.6240582], Action: 2
+  Ep 117, Step 0, Pos: [8.805702  2.7988372], Action: 3
+  Ep 118, Step 0, Pos: [9.738941 8.890136], Action: 0
+  Ep 119, Step 0, Pos: [8.966135 4.8063  ], Action: 3
+  Ep 120, Step 0, Pos: [7.079118  6.0084233], Action: 3
+  Ep 121, Step 0, Pos: [8.422775  2.0233388], Action: 3
+  Ep 122, Step 0, Pos: [3.4834936 7.116525 ], Action: 0
+  Ep 123, Step 0, Pos: [1.4693787 0.7549417], Action: 2
+  Ep 124, Step 0, Pos: [6.0643287 6.5375476], Action: 3
+  Ep 125, Step 0, Pos: [8.084112   0.53720266], Action: 3
+  Ep 126, Step 0, Pos: [3.8550968 8.0794115], Action: 0
+  Ep 127, Step 0, Pos: [7.187294  6.7076335], Action: 3
+  Ep 128, Step 0, Pos: [6.3614087 9.450188 ], Action: 0
+  Ep 129, Step 0, Pos: [3.9672847 3.7170749], Action: 1
+  Ep 130, Step 0, Pos: [7.1934915 9.739923 ], Action: 0
+  Ep 131, Step 0, Pos: [1.5829964 1.3997647], Action: 2
+  Ep 132, Step 0, Pos: [5.934125  1.2571467], Action: 1
+  Ep 133, Step 0, Pos: [7.8623037 6.8097   ], Action: 3
+  Ep 134, Step 0, Pos: [9.304011  2.4170434], Action: 3
+  Ep 135, Step 0, Pos: [2.7853992  0.46677107], Action: 1
+  Ep 136, Step 0, Pos: [7.1972976 1.6175922], Action: 3
+  Ep 137, Step 0, Pos: [0.43677875 7.4249773 ], Action: 2
+  Ep 138, Step 0, Pos: [9.3382635  0.91015756], Action: 3
+  Ep 139, Step 0, Pos: [7.446731 8.511033], Action: 0
+  Ep 140, Step 0, Pos: [0.2725252 3.1166842], Action: 2
+  Ep 141, Step 0, Pos: [9.033853  4.3575687], Action: 3
+  Ep 142, Step 0, Pos: [7.727602 7.744306], Action: 0
+  Ep 143, Step 0, Pos: [8.710869  7.9466805], Action: 0
+  Ep 144, Step 0, Pos: [9.01482  8.401241], Action: 0
+  Ep 145, Step 0, Pos: [4.395064  1.9458444], Action: 1
+  Ep 146, Step 0, Pos: [3.226282  3.1871107], Action: 2
+  Ep 147, Step 0, Pos: [5.5579534 7.4305873], Action: 0
+  Ep 148, Step 0, Pos: [6.440283 6.258009], Action: 3
+  Ep 149, Step 0, Pos: [7.219667  5.1219482], Action: 3
+  Ep 150, Step 0, Pos: [1.4364552 8.502939 ], Action: 0
+  Ep 151, Step 0, Pos: [1.1250705 1.7828494], Action: 2
+  Ep 152, Step 0, Pos: [7.4711103 2.309909 ], Action: 3
+  Ep 153, Step 0, Pos: [5.053927  6.7201037], Action: 0
+  Ep 154, Step 0, Pos: [7.760882 6.484578], Action: 3
+  Ep 155, Step 0, Pos: [2.3256042 6.7802997], Action: 2
+  Ep 156, Step 0, Pos: [2.3396482 6.6782227], Action: 2
+  Ep 157, Step 0, Pos: [8.819806  3.2530816], Action: 3
+  Ep 158, Step 0, Pos: [0.57180476 8.390619  ], Action: 0
+  Ep 159, Step 0, Pos: [7.658956 4.079322], Action: 3
+  Ep 160, Step 0, Pos: [3.250485 7.296886], Action: 0
+  Ep 161, Step 0, Pos: [0.21240109 2.940103  ], Action: 2
+  Ep 162, Step 0, Pos: [7.579633  3.0797703], Action: 3
+  Ep 163, Step 0, Pos: [4.207622   0.48770794], Action: 1
+  Ep 164, Step 0, Pos: [8.128234 8.624942], Action: 0
+  Ep 165, Step 0, Pos: [3.4162772 5.111196 ], Action: 2
+  Ep 166, Step 0, Pos: [1.5569987 7.354766 ], Action: 2
+  Ep 167, Step 0, Pos: [0.7407445 3.8236334], Action: 2
+  Ep 168, Step 0, Pos: [0.94686675 3.2309594 ], Action: 2
+  Ep 169, Step 0, Pos: [2.7751527 8.579779 ], Action: 0
+  Ep 170, Step 0, Pos: [9.7023     0.69750285], Action: 3
+  Ep 171, Step 0, Pos: [1.0857688 5.4556203], Action: 2
+  Ep 172, Step 0, Pos: [0.90794164 1.075954  ], Action: 2
+  Ep 173, Step 0, Pos: [4.2980747 8.772856 ], Action: 0
+  Ep 174, Step 0, Pos: [6.8711743 8.211207 ], Action: 0
+  Ep 175, Step 0, Pos: [3.2939026 8.363572 ], Action: 0
+  Ep 176, Step 0, Pos: [9.124927   0.21453024], Action: 3
+  Ep 177, Step 0, Pos: [8.848443  6.9086914], Action: 3
+  Ep 178, Step 0, Pos: [1.5768336 0.6309956], Action: 1
+  Ep 179, Step 0, Pos: [1.230031 7.868152], Action: 2
+  Ep 180, Step 0, Pos: [5.600423  3.3907692], Action: 3
+  Ep 181, Step 0, Pos: [9.565766  1.7971032], Action: 3
+  Ep 182, Step 0, Pos: [4.3341026 8.269254 ], Action: 0
+  Ep 183, Step 0, Pos: [4.6119823 4.122965 ], Action: 1
+  Ep 184, Step 0, Pos: [2.2039075 6.997874 ], Action: 2
+  Ep 185, Step 0, Pos: [6.217797 8.762026], Action: 0
+  Ep 186, Step 0, Pos: [3.6310673 7.4373593], Action: 0
+  Ep 187, Step 0, Pos: [5.617933  1.7089512], Action: 1
+  Ep 188, Step 0, Pos: [1.3229805 8.531052 ], Action: 0
+  Ep 189, Step 0, Pos: [5.8749413 9.60658  ], Action: 0
+  Ep 190, Step 0, Pos: [1.9172796 8.3651495], Action: 0
+  Ep 191, Step 0, Pos: [1.3278126 3.0038269], Action: 2
+  Ep 192, Step 0, Pos: [6.110117 9.473515], Action: 0
+  Ep 193, Step 0, Pos: [1.2885262 7.4374666], Action: 2
+  Ep 194, Step 0, Pos: [6.856579 8.804227], Action: 0
+  Ep 195, Step 0, Pos: [9.453669  4.4017267], Action: 3
+  Ep 196, Step 0, Pos: [8.820142 9.589701], Action: 0
+  Ep 197, Step 0, Pos: [5.3959765 6.0486493], Action: 3
+  Ep 198, Step 0, Pos: [3.0186217 9.195317 ], Action: 0
+  Ep 199, Step 0, Pos: [3.926278  5.3470974], Action: 2
+  Ep 200, Step 0, Pos: [4.1909285 3.3798585], Action: 1
+  Ep 201, Step 0, Pos: [6.803757 6.840045], Action: 3
+  Ep 202, Step 0, Pos: [4.9360914 8.478585 ], Action: 0
+  Ep 203, Step 0, Pos: [3.0707455 1.9120039], Action: 1
+  Ep 204, Step 0, Pos: [4.4259577 9.453005 ], Action: 0
+  Ep 205, Step 0, Pos: [6.8264327 1.093345 ], Action: 3
+  Ep 206, Step 0, Pos: [1.1908103 1.9926758], Action: 2
+  Ep 207, Step 0, Pos: [4.114545  2.0982528], Action: 1
+  Ep 208, Step 0, Pos: [6.6386805  0.26676944], Action: 1
+  Ep 209, Step 0, Pos: [5.994254 2.450156], Action: 3
+  Ep 210, Step 0, Pos: [4.683195 9.27538 ], Action: 0
+  Ep 211, Step 0, Pos: [6.165557 8.210606], Action: 0
+  Ep 212, Step 0, Pos: [7.467808  6.8126707], Action: 3
+  Ep 213, Step 0, Pos: [6.4593406 2.9029303], Action: 3
+  Ep 214, Step 0, Pos: [2.509485 7.646393], Action: 0
+  Ep 215, Step 0, Pos: [7.6159654 7.9634624], Action: 0
+  Ep 216, Step 0, Pos: [8.814414  1.4892595], Action: 3
+  Ep 217, Step 0, Pos: [7.879844   0.74345106], Action: 3
+  Ep 218, Step 0, Pos: [1.347762  2.8656745], Action: 2
+  Ep 219, Step 0, Pos: [1.4604768 1.0399561], Action: 2
+  Ep 220, Step 0, Pos: [1.1301394 5.8192263], Action: 2
+  Ep 221, Step 0, Pos: [9.626939  1.7380329], Action: 3
+  Ep 222, Step 0, Pos: [7.7294164  0.44064265], Action: 3
+  Ep 223, Step 0, Pos: [7.8040957 8.628711 ], Action: 0
+  Ep 224, Step 0, Pos: [9.389996  6.6398344], Action: 3
+  Ep 225, Step 0, Pos: [5.3384166 2.3562512], Action: 1
+  Ep 226, Step 0, Pos: [5.3219805 9.378145 ], Action: 0
+  Ep 227, Step 0, Pos: [2.0471375 7.5215087], Action: 0
+  Ep 228, Step 0, Pos: [4.296488  2.8940516], Action: 1
+  Ep 229, Step 0, Pos: [0.79709435 6.432442  ], Action: 2
+  Ep 230, Step 0, Pos: [2.7578115 4.108032 ], Action: 2
+  Ep 231, Step 0, Pos: [8.411312  9.1713705], Action: 0
+  Ep 232, Step 0, Pos: [2.400687  1.4557395], Action: 1
+  Ep 233, Step 0, Pos: [9.762517  1.0989118], Action: 3
+  Ep 234, Step 0, Pos: [0.5356609 2.3784933], Action: 2
+  Ep 235, Step 0, Pos: [6.3600154 2.5056288], Action: 3
+  Ep 236, Step 0, Pos: [4.4436293 9.366519 ], Action: 0
+  Ep 237, Step 0, Pos: [0.80215317 1.6490034 ], Action: 2
+  Ep 238, Step 0, Pos: [0.64184296 1.2997738 ], Action: 2
+  Ep 239, Step 0, Pos: [9.760551  5.1421165], Action: 3
+  Ep 240, Step 0, Pos: [7.2688565 3.6940658], Action: 3
+  Ep 241, Step 0, Pos: [9.366564 9.036667], Action: 0
+  Ep 242, Step 0, Pos: [6.5465956 4.460768 ], Action: 3
+  Ep 243, Step 0, Pos: [2.1912699 6.88678  ], Action: 2
+  Ep 244, Step 0, Pos: [6.4924226 1.4059027], Action: 3
+  Ep 245, Step 0, Pos: [1.5956861 4.867621 ], Action: 2
+  Ep 246, Step 0, Pos: [1.6440334 4.1463456], Action: 2
+  Ep 247, Step 0, Pos: [1.8964432 6.7369113], Action: 2
+  Ep 248, Step 0, Pos: [7.8284464 6.426542 ], Action: 3
+  Ep 249, Step 0, Pos: [2.372519 9.525131], Action: 0
+  Ep 250, Step 0, Pos: [5.8416247 3.989334 ], Action: 3
+  Ep 251, Step 0, Pos: [1.2525675 0.238653 ], Action: 1
+  Ep 252, Step 0, Pos: [3.9299808 1.801327 ], Action: 1
+  Ep 253, Step 0, Pos: [8.895971 5.664097], Action: 3
+  Ep 254, Step 0, Pos: [7.270664 2.08359 ], Action: 3
+  Ep 255, Step 0, Pos: [8.728618  4.0337296], Action: 3
+  Ep 256, Step 0, Pos: [3.9444177 2.9648302], Action: 1
+  Ep 257, Step 0, Pos: [3.6269    1.3681039], Action: 1
+  Ep 258, Step 0, Pos: [5.598561 8.396763], Action: 0
+  Ep 259, Step 0, Pos: [0.3199858 8.589077 ], Action: 0
+  Ep 260, Step 0, Pos: [9.176549 5.381924], Action: 3
+  Ep 261, Step 0, Pos: [5.8804865 0.8838194], Action: 1
+  Ep 262, Step 0, Pos: [7.0600634 0.4836719], Action: 3
+  Ep 263, Step 0, Pos: [8.586458   0.24336413], Action: 3
+  Ep 264, Step 0, Pos: [6.9439154 2.1532333], Action: 3
+  Ep 265, Step 0, Pos: [3.542738 6.73471 ], Action: 0
+  Ep 266, Step 0, Pos: [4.3262076 8.66169  ], Action: 0
+  Ep 267, Step 0, Pos: [2.7391577  0.35214326], Action: 1
+  Ep 268, Step 0, Pos: [2.290334  0.5180557], Action: 1
+  Ep 269, Step 0, Pos: [9.79856  1.273273], Action: 3
+  Ep 270, Step 0, Pos: [9.264234  2.3981917], Action: 3
+  Ep 271, Step 0, Pos: [8.630081  3.8279386], Action: 3
+  Ep 272, Step 0, Pos: [3.2413285 5.673963 ], Action: 2
+  Ep 273, Step 0, Pos: [4.299727  3.0979307], Action: 1
+  Ep 274, Step 0, Pos: [3.3944578 6.8172665], Action: 0
+  Ep 275, Step 0, Pos: [3.423119  6.5874496], Action: 0
+  Ep 276, Step 0, Pos: [8.62023   6.2031064], Action: 3
+  Ep 277, Step 0, Pos: [7.3787937 8.724405 ], Action: 0
+  Ep 278, Step 0, Pos: [8.998424 9.758424], Action: 0
+  Ep 279, Step 0, Pos: [3.2300627 8.006713 ], Action: 0
+  Ep 280, Step 0, Pos: [4.2017255 3.4085925], Action: 1
+  Ep 281, Step 0, Pos: [2.1554065 8.994831 ], Action: 0
+  Ep 282, Step 0, Pos: [4.160302 7.907654], Action: 0
+  Ep 283, Step 0, Pos: [8.219697  7.8343267], Action: 0
+  Ep 284, Step 0, Pos: [9.6576    4.0519876], Action: 3
+  Ep 285, Step 0, Pos: [9.679987  6.5794396], Action: 3
+  Ep 286, Step 0, Pos: [9.293576 4.528118], Action: 3
+  Ep 287, Step 0, Pos: [1.4597298 5.785795 ], Action: 2
+  Ep 288, Step 0, Pos: [2.7313077 7.9377775], Action: 0
+  Ep 289, Step 0, Pos: [4.086066 4.968902], Action: 2
+  Ep 290, Step 0, Pos: [4.522466 8.604415], Action: 0
+  Ep 291, Step 0, Pos: [9.638699 7.125084], Action: 3
+  Ep 292, Step 0, Pos: [9.393119  7.0334496], Action: 3
+  Ep 293, Step 0, Pos: [0.9944878 3.9614663], Action: 2
+  Ep 294, Step 0, Pos: [9.774875  1.2128261], Action: 3
+  Ep 295, Step 0, Pos: [4.4856024 5.5140224], Action: 2
+  Ep 296, Step 0, Pos: [6.251334  2.6054463], Action: 3
+  Ep 297, Step 0, Pos: [6.65694   3.5523667], Action: 3
+  Ep 298, Step 0, Pos: [6.2886324 2.050686 ], Action: 3
+  Ep 299, Step 0, Pos: [6.271659  1.1889246], Action: 1
+  Ep 300, Step 0, Pos: [4.501789  5.0556393], Action: 2
+  Ep 301, Step 0, Pos: [0.78828716 6.1238313 ], Action: 2
+  Ep 302, Step 0, Pos: [2.4131029  0.35084438], Action: 1
+  Ep 303, Step 0, Pos: [1.6959505 1.0360684], Action: 2
+  Ep 304, Step 0, Pos: [0.34543398 5.588328  ], Action: 2
+  Ep 305, Step 0, Pos: [1.1018254 3.2474747], Action: 2
+  Ep 306, Step 0, Pos: [5.0023327  0.44338942], Action: 1
+  Ep 307, Step 0, Pos: [8.594002  6.1636357], Action: 3
+  Ep 308, Step 0, Pos: [4.0830874 7.0839643], Action: 0
+  Ep 309, Step 0, Pos: [5.549581 4.508067], Action: 3
+  Ep 310, Step 0, Pos: [7.293513 9.201089], Action: 0
+  Ep 311, Step 0, Pos: [5.7488866 3.9199705], Action: 3
+  Ep 312, Step 0, Pos: [8.323309 9.539784], Action: 0
+  Ep 313, Step 0, Pos: [9.705211  1.6805266], Action: 3
+  Ep 314, Step 0, Pos: [0.93406117 2.1852188 ], Action: 2
+  Ep 315, Step 0, Pos: [9.097053 9.013668], Action: 0
+  Ep 316, Step 0, Pos: [6.273226  3.5809717], Action: 3
+  Ep 317, Step 0, Pos: [9.72593  3.195092], Action: 3
+  Ep 318, Step 0, Pos: [8.687707  5.3469033], Action: 3
+  Ep 319, Step 0, Pos: [1.2465339 5.826973 ], Action: 2
+  Ep 320, Step 0, Pos: [2.7245438 4.700302 ], Action: 2
+  Ep 321, Step 0, Pos: [2.9755013 5.5361423], Action: 2
+  Ep 322, Step 0, Pos: [8.261601  7.6011195], Action: 3
+  Ep 323, Step 0, Pos: [9.370377 2.182402], Action: 3
+  Ep 324, Step 0, Pos: [8.877025  5.6903505], Action: 3
+  Ep 325, Step 0, Pos: [1.1014119 8.20948  ], Action: 0
+  Ep 326, Step 0, Pos: [6.7448707 1.6026641], Action: 3
+  Ep 327, Step 0, Pos: [0.9082077 3.8268914], Action: 2
+  Ep 328, Step 0, Pos: [3.516907 8.821453], Action: 0
+  Ep 329, Step 0, Pos: [0.94922024 0.36146465], Action: 2
+  Ep 330, Step 0, Pos: [7.599469  7.5546484], Action: 0
+  Ep 331, Step 0, Pos: [2.0989735 0.5078311], Action: 1
+  Ep 332, Step 0, Pos: [5.6337705 3.9253511], Action: 3
+  Ep 333, Step 0, Pos: [3.7843018 8.504007 ], Action: 0
+  Ep 334, Step 0, Pos: [7.93219  6.413919], Action: 3
+  Ep 335, Step 0, Pos: [6.2631183 8.201385 ], Action: 0
+  Ep 336, Step 0, Pos: [3.0052907 5.0760264], Action: 2
+  Ep 337, Step 0, Pos: [0.7147644 3.9415236], Action: 2
+  Ep 338, Step 0, Pos: [4.227945 2.906406], Action: 1
+  Ep 339, Step 0, Pos: [7.665322  1.9598755], Action: 3
+  Ep 340, Step 0, Pos: [7.3564386 6.153179 ], Action: 3
+  Ep 341, Step 0, Pos: [8.523798  6.8326964], Action: 3
+  Ep 342, Step 0, Pos: [2.049038 0.444648], Action: 1
+  Ep 343, Step 0, Pos: [5.1048837 7.2393627], Action: 0
+  Ep 344, Step 0, Pos: [3.180107 4.805229], Action: 2
+  Ep 345, Step 0, Pos: [2.0638132 7.412881 ], Action: 0
+  Ep 346, Step 0, Pos: [6.671445  3.4636388], Action: 3
+  Ep 347, Step 0, Pos: [8.132198  0.7411461], Action: 3
+  Ep 348, Step 0, Pos: [5.67217   0.8101401], Action: 1
+  Ep 349, Step 0, Pos: [7.659049 8.313603], Action: 0
+  Ep 350, Step 0, Pos: [5.154066 8.632937], Action: 0
+  Ep 351, Step 0, Pos: [0.5632136 2.7170286], Action: 2
+  Ep 352, Step 0, Pos: [3.640779  0.9142757], Action: 1
+  Ep 353, Step 0, Pos: [3.1712403 8.443987 ], Action: 0
+  Ep 354, Step 0, Pos: [5.360969  0.6843407], Action: 1
+  Ep 355, Step 0, Pos: [7.2010136 6.780858 ], Action: 3
+  Ep 356, Step 0, Pos: [9.739355  7.6327653], Action: 3
+  Ep 357, Step 0, Pos: [6.8344073 7.116955 ], Action: 0
+  Ep 358, Step 0, Pos: [7.787588 8.257742], Action: 0
+  Ep 359, Step 0, Pos: [4.1561775 5.056879 ], Action: 2
+  Ep 360, Step 0, Pos: [4.681407  2.2773614], Action: 1
+  Ep 361, Step 0, Pos: [0.51282024 9.284771  ], Action: 0
+  Ep 362, Step 0, Pos: [0.5646379 9.505802 ], Action: 0
+  Ep 363, Step 0, Pos: [5.373338 7.113317], Action: 0
+  Ep 364, Step 0, Pos: [0.9920932 4.1207376], Action: 2
+  Ep 365, Step 0, Pos: [3.0187626 1.7780383], Action: 1
+  Ep 366, Step 0, Pos: [4.1982794 6.0971184], Action: 0
+  Ep 367, Step 0, Pos: [3.2936094 2.67381  ], Action: 1
+  Ep 368, Step 0, Pos: [3.3079283 6.945781 ], Action: 0
+  Ep 369, Step 0, Pos: [6.8428454 6.576722 ], Action: 3
+  Ep 370, Step 0, Pos: [9.420367  3.8521004], Action: 3
+  Ep 371, Step 0, Pos: [2.2781022 0.2646026], Action: 1
+  Ep 372, Step 0, Pos: [1.4411944 1.1495746], Action: 2
+  Ep 373, Step 0, Pos: [5.830432 2.786298], Action: 3
+  Ep 374, Step 0, Pos: [4.0132775 0.8105355], Action: 1
+  Ep 375, Step 0, Pos: [7.033839  4.9176526], Action: 3
+  Ep 376, Step 0, Pos: [0.23441489 5.3512473 ], Action: 2
+  Ep 377, Step 0, Pos: [1.9563216 8.553536 ], Action: 0
+  Ep 378, Step 0, Pos: [9.725697  4.0070133], Action: 3
+  Ep 379, Step 0, Pos: [6.506053  2.4553978], Action: 3
+  Ep 380, Step 0, Pos: [5.324119  1.4925641], Action: 1
+  Ep 381, Step 0, Pos: [2.3580716 7.688939 ], Action: 0
+  Ep 382, Step 0, Pos: [1.1840467 5.421188 ], Action: 2
+  Ep 383, Step 0, Pos: [7.238124  1.9847673], Action: 3
+  Ep 384, Step 0, Pos: [9.043484 8.626366], Action: 0
+  Ep 385, Step 0, Pos: [5.3395834 4.451141 ], Action: 3
+  Ep 386, Step 0, Pos: [1.0442615 7.1027102], Action: 2
+  Ep 387, Step 0, Pos: [4.2243505  0.27865285], Action: 1
+  Ep 388, Step 0, Pos: [6.5600915 9.732689 ], Action: 0
+  Ep 389, Step 0, Pos: [7.390113 4.500125], Action: 3
+  Ep 390, Step 0, Pos: [7.207201   0.35123447], Action: 3
+  Ep 391, Step 0, Pos: [0.43745324 4.5267034 ], Action: 2
+  Ep 392, Step 0, Pos: [0.93678254 1.7431304 ], Action: 2
+  Ep 393, Step 0, Pos: [5.5212116 3.5722208], Action: 3
+  Ep 394, Step 0, Pos: [8.795021  5.5709257], Action: 3
+  Ep 395, Step 0, Pos: [1.8357106 7.7327094], Action: 0
+  Ep 396, Step 0, Pos: [5.95493  8.714631], Action: 0
+  Ep 397, Step 0, Pos: [1.5153487 8.372125 ], Action: 0
+  Ep 398, Step 0, Pos: [6.9134026  0.30718005], Action: 3
+  Ep 399, Step 0, Pos: [3.732986  3.7898605], Action: 2
+  Ep 400, Step 0, Pos: [8.867609 5.3352  ], Action: 3
+  Ep 401, Step 0, Pos: [2.6365752 4.2319875], Action: 2
+  Ep 402, Step 0, Pos: [4.284715  2.8309321], Action: 1
+  Ep 403, Step 0, Pos: [4.5510964 6.5991383], Action: 0
+  Ep 404, Step 0, Pos: [6.5732384 8.495581 ], Action: 0
+  Ep 405, Step 0, Pos: [9.765466 9.634812], Action: 0
+  Ep 406, Step 0, Pos: [6.513587  3.0683088], Action: 3
+  Ep 407, Step 0, Pos: [2.1392322 8.839059 ], Action: 0
+  Ep 408, Step 0, Pos: [3.6122813 1.2720902], Action: 1
+  Ep 409, Step 0, Pos: [0.5711278 8.85327  ], Action: 0
+  Ep 410, Step 0, Pos: [5.7611637 4.1780124], Action: 3
+  Ep 411, Step 0, Pos: [3.8441188 3.6371312], Action: 1
+  Ep 412, Step 0, Pos: [9.500014  1.3644689], Action: 3
+  Ep 413, Step 0, Pos: [8.945842  4.1113453], Action: 3
+  Ep 414, Step 0, Pos: [3.1397545 8.087424 ], Action: 0
+  Ep 415, Step 0, Pos: [5.3217363 1.2378463], Action: 1
+  Ep 416, Step 0, Pos: [6.8770256 5.602449 ], Action: 3
+  Ep 417, Step 0, Pos: [6.777731  3.6325135], Action: 3
+  Ep 418, Step 0, Pos: [8.688933  5.9208503], Action: 3
+  Ep 419, Step 0, Pos: [5.9666824 3.0334237], Action: 3
+  Ep 420, Step 0, Pos: [1.342391 3.89503 ], Action: 2
+  Ep 421, Step 0, Pos: [6.847411  0.7437661], Action: 3
+  Ep 422, Step 0, Pos: [3.8683124 2.368944 ], Action: 1
+  Ep 423, Step 0, Pos: [6.6716914 7.79758  ], Action: 0
+  Ep 424, Step 0, Pos: [9.441902  3.5774207], Action: 3
+  Ep 425, Step 0, Pos: [9.420214  5.7914762], Action: 3
+  Ep 426, Step 0, Pos: [6.9990115 3.5427582], Action: 3
+  Ep 427, Step 0, Pos: [8.635616   0.96843594], Action: 3
+  Ep 428, Step 0, Pos: [2.7871475 1.0445569], Action: 1
+  Ep 429, Step 0, Pos: [2.6709151 3.770496 ], Action: 2
+  Ep 430, Step 0, Pos: [0.898231 7.527086], Action: 2
+  Ep 431, Step 0, Pos: [1.1916772 7.9272485], Action: 0
+  Ep 432, Step 0, Pos: [8.747859 8.401292], Action: 0
+  Ep 433, Step 0, Pos: [5.6052647 9.342753 ], Action: 0
+  Ep 434, Step 0, Pos: [1.5867944 5.3989067], Action: 2
+  Ep 435, Step 0, Pos: [3.9828815 2.82243  ], Action: 1
+  Ep 436, Step 0, Pos: [2.8986142 1.4075027], Action: 1
+  Ep 437, Step 0, Pos: [4.547809  6.8510046], Action: 0
+  Ep 438, Step 0, Pos: [8.664667  2.5888438], Action: 3
+  Ep 439, Step 0, Pos: [0.49805352 7.984178  ], Action: 2
+  Ep 440, Step 0, Pos: [8.903828 4.1241  ], Action: 3
+  Ep 441, Step 0, Pos: [3.3658125 9.525144 ], Action: 0
+  Ep 442, Step 0, Pos: [4.8107095  0.32269824], Action: 1
+  Ep 443, Step 0, Pos: [1.764925 8.24507 ], Action: 0
+  Ep 444, Step 0, Pos: [4.683601 7.207226], Action: 0
+  Ep 445, Step 0, Pos: [7.4189725 3.3804514], Action: 3
+  Ep 446, Step 0, Pos: [3.6232579 6.706233 ], Action: 0
+  Ep 447, Step 0, Pos: [7.1291986  0.35339993], Action: 3
+  Ep 448, Step 0, Pos: [3.801479 6.990562], Action: 0
+  Ep 449, Step 0, Pos: [7.502931  2.0741136], Action: 3
+  Ep 450, Step 0, Pos: [9.692543 8.558087], Action: 0
+  Ep 451, Step 0, Pos: [6.219646  3.5367434], Action: 3
+  Ep 452, Step 0, Pos: [5.806821   0.87985456], Action: 1
+  Ep 453, Step 0, Pos: [5.960584 4.726975], Action: 3
+  Ep 454, Step 0, Pos: [9.327099  1.0610898], Action: 3
+  Ep 455, Step 0, Pos: [0.39799476 3.8199039 ], Action: 2
+  Ep 456, Step 0, Pos: [6.0023427 4.3002   ], Action: 3
+  Ep 457, Step 0, Pos: [9.160022  2.1006079], Action: 3
+  Ep 458, Step 0, Pos: [9.422078  1.2769387], Action: 3
+  Ep 459, Step 0, Pos: [1.300144  2.3758447], Action: 2
+  Ep 460, Step 0, Pos: [7.9052653 8.111857 ], Action: 0
+  Ep 461, Step 0, Pos: [6.4551945 1.2170905], Action: 3
+  Ep 462, Step 0, Pos: [4.336032  3.3913853], Action: 1
+  Ep 463, Step 0, Pos: [6.0076594 3.320268 ], Action: 3
+  Ep 464, Step 0, Pos: [5.429607  1.7862817], Action: 1
+  Ep 465, Step 0, Pos: [0.9789509 8.987299 ], Action: 0
+  Ep 466, Step 0, Pos: [7.5047526 3.3273463], Action: 3
+  Ep 467, Step 0, Pos: [1.3844597 9.60778  ], Action: 0
+  Ep 468, Step 0, Pos: [4.0871077 5.4767985], Action: 2
+  Ep 469, Step 0, Pos: [0.28855464 9.190728  ], Action: 0
+  Ep 470, Step 0, Pos: [0.4279419 2.7519143], Action: 2
+  Ep 471, Step 0, Pos: [2.7176661 7.7480063], Action: 0
+  Ep 472, Step 0, Pos: [9.012254 5.642507], Action: 3
+  Ep 473, Step 0, Pos: [8.296644  6.4427557], Action: 3
+  Ep 474, Step 0, Pos: [7.6889706 3.6248605], Action: 3
+  Ep 475, Step 0, Pos: [3.5571585 7.6271996], Action: 0
+  Ep 476, Step 0, Pos: [8.455644 9.497477], Action: 0
+  Ep 477, Step 0, Pos: [3.3275194 4.2872386], Action: 2
+  Ep 478, Step 0, Pos: [6.939776 4.16919 ], Action: 3
+  Ep 479, Step 0, Pos: [2.0554667 6.8524942], Action: 2
+  Ep 480, Step 0, Pos: [6.0676894 2.0117567], Action: 3
+  Ep 481, Step 0, Pos: [0.3736553 9.293122 ], Action: 0
+  Ep 482, Step 0, Pos: [7.2007384 4.8209634], Action: 3
+  Ep 483, Step 0, Pos: [9.481778 5.432654], Action: 3
+  Ep 484, Step 0, Pos: [2.612035  1.9998798], Action: 1
+  Ep 485, Step 0, Pos: [2.5447698 1.6932921], Action: 1
+  Ep 486, Step 0, Pos: [6.1183376 7.5784736], Action: 0
+  Ep 487, Step 0, Pos: [8.808389 6.902278], Action: 3
+  Ep 488, Step 0, Pos: [7.4926887 0.4014349], Action: 3
+  Ep 489, Step 0, Pos: [2.0143745 7.8705864], Action: 0
+  Ep 490, Step 0, Pos: [4.994658  7.4177494], Action: 0
+  Ep 491, Step 0, Pos: [5.7093787 9.597506 ], Action: 0
+  Ep 492, Step 0, Pos: [5.5202436 4.1348977], Action: 3
+  Ep 493, Step 0, Pos: [6.5651836 5.036736 ], Action: 3
+  Ep 494, Step 0, Pos: [5.932001 8.683373], Action: 0
+  Ep 495, Step 0, Pos: [0.7740109 3.041241 ], Action: 2
+  Ep 496, Step 0, Pos: [1.4408116 3.459067 ], Action: 2
+  Ep 497, Step 0, Pos: [4.4950624 1.6193637], Action: 1
+  Ep 498, Step 0, Pos: [0.48978543 4.067448  ], Action: 2
+  Ep 499, Step 0, Pos: [5.6431823 6.3636413], Action: 3
+Average undiscounted return over 500 episodes: -10.898399999999999
+Avg_return: -10.898399999999999
+Sucess rate: 0.0
+Success needed: 0.9

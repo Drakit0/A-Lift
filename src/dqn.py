@@ -157,6 +157,10 @@ class DQNAgent:
         self.dqn_target: DQN = DQN(self.feature_size, self.num_actions)
         self.dqn_actual: DQN = DQN(self.feature_size, self.num_actions)
         
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.dqn_target: DQN = DQN(self.feature_size, self.num_actions).to(self.device)
+        self.dqn_actual: DQN = DQN(self.feature_size, self.num_actions).to(self.device)
+        
         self.episode_returns: List[float] = []
         self.episode_lengths: List[int] = []
         self.success_rate: List[float] = []
@@ -289,7 +293,7 @@ class DQNAgent:
                             replay_buffer.push(tr)
 
                     # Vectorized minibatch update from replay (n-step transitions)
-                    if len(replay_buffer) >= batch_size:
+                    if len(replay_buffer) >= batch_size and global_step % 4 == 0:
                         batch = replay_buffer.sample(batch_size)
                         states = [b[0] for b in batch]
                         actions = [b[1] for b in batch]
@@ -301,8 +305,8 @@ class DQNAgent:
                         s_feats = np.stack([self.feedback.process_observation(s) for s in states], axis=0)
                         s_next_feats = np.stack([self.feedback.process_observation(sn) if sn is not None else np.zeros(self.feature_size) for sn in next_states], axis=0)
 
-                        s_tensor = torch.tensor(s_feats, dtype=torch.float32)
-                        s_next_tensor = torch.tensor(s_next_feats, dtype=torch.float32)
+                        s_tensor = torch.tensor(s_feats, dtype=torch.float32).to(self.device)
+                        s_next_tensor = torch.tensor(s_next_feats, dtype=torch.float32).to(self.device)
                         actions_tensor = torch.tensor(actions, dtype=torch.long)
                         rewards_tensor = torch.tensor(rewards, dtype=torch.float32)
                         dones_tensor = torch.tensor(dones, dtype=torch.bool)
@@ -389,7 +393,7 @@ class DQNAgent:
 
             progress_bar.set_description(f"Epsilon: {self.epsilon:.3f} | Success Rate (last {success_window}): {current_success_rate:.1f}%")
 
-    def evaluate(self, num_episodes: int) -> float:
+    def evaluate(self, num_episodes: int) -> tuple[float, float]:
         """Evaluate the agent's performance over a specified number of episodes.
         
         Args:
@@ -469,6 +473,7 @@ class DQNAgent:
 
 def main():
     env_str = "1"
+    
     match env_str:
         case "1":
             just_pick = True

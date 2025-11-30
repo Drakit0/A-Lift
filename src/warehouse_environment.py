@@ -67,7 +67,7 @@ class WarehouseEnv(gym.Env):
             (4.9, 1.0, 0.2, 5.0), 
             (7.9, 1.0, 0.2, 5.0)
         ]
-        self.delivery_area: Tuple[float, float, float, float] = (2.5, 9, 5.0, 2.0)
+        self.delivery_area: Tuple[float, float, float, float] = (2.5, 9.0, 5.0, 1.0)
 
         # Agent properties
         self.agent_radius: float = 0.2
@@ -136,62 +136,121 @@ class WarehouseEnv(gym.Env):
         """
         
         # --- Reward definition ---
-        REWARD_TO_BE_DESIGNED: float = 0.0
+        designed_reward: float = 10
 
-        # --- Initialize state variables ---
         self.steps += 1
-        reward: float = 0.0
+        step_penalty: float = -0.1
+        reward: float = step_penalty # Reduce number of steps
         terminated: bool = False
         truncated: bool = False
+        
+        info: Dict[str, Any] = {}
+        
+        # Check for max steps
+        if self.steps >= self.max_steps:
+            truncated = True
+            reward = -designed_reward/2  # Penalty for timeout
+            return self._get_obs(), reward, terminated, truncated, info
 
         # --- Action handling ---
         if action < 4:  # Movement
             new_pos: Tuple[float, float] = self._get_new_position(action)
+            
             if not self._is_collision(new_pos):
+                # old_pos = self.agent_pos
+                # self.agent_pos = new_pos
+                
+                # # Reward shaping based on progress toward goal
+                # if not self.agent_has_object:
+                #     # Calculate distance to nearest object
+                #     old_min_dist = self._get_min_object_distance(old_pos)
+                #     new_min_dist = self._get_min_object_distance(self.agent_pos)
+                    
+                #     if old_min_dist is not None and new_min_dist is not None:
+                #         # Reward for getting closer to objects
+                #         progress = old_min_dist - new_min_dist
+                #         reward = 0.5 * progress  # Small shaping reward
+                        
+                # else:
+                #     # Has object, reward for getting closer to delivery
+                #     old_dist = self._distance_to_area(old_pos, self.delivery_area)
+                #     new_dist = self._distance_to_area(self.agent_pos, self.delivery_area)
+                #     progress = old_dist - new_dist
+                #     reward = 0.5 * progress
+                
                 self.agent_pos = new_pos
-                if not self.agent_has_object:
-                    reward = 0.1*max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
-                else:
-                    reward = 0.1*(-1 + 2.71828**(-2*self._distance_to_area(self.agent_pos)/(self.width**2 + self.height**2)**0.5))
+                reward += step_penalty
 
             else:
                 self.collision = True
                 terminated = True
-                reward = -1
+                reward = -designed_reward
 
         elif action == 4:  # Pick
             if not self.agent_has_object:
+                
                 for i, obj_pos in enumerate(self.object_positions):
                     if obj_pos is not None and self._distance(self.agent_pos, obj_pos) <= self.pickup_distance + self.agent_radius:
                         self.agent_has_object = True
                         self.object_positions[i] = None
-                        reward = 1
+                        reward = designed_reward
+                        
                         if self.just_pick:
                             terminated = True
+                            
                         break
+                    
+                if not self.agent_has_object:
+                    reward = -1.0 # Don't pick if you are not in range
+                    
+            else:
+                reward = -1.0 # Object was already picked
+                    
 
         elif action == 5:  # Drop
             if self.agent_has_object:
                 if self._is_in_area(self.agent_pos, self.delivery_area):
-                    reward = 1
+                    reward = designed_reward
                     self.delivery = True
+                    
                 else:
-                    if not self.agent_has_object:
-                        reward = 0.1*max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
-                    else:
-                        reward = 0.1*(-1 + 2.71828**(-2*self._distance_to_area(self.agent_pos)/(self.width**2 + self.height**2)**0.5))
+                    # if not self.agent_has_object:
+                    #     reward = 0.1*max([-1 + 2.71828**(-2*self._distance(self.agent_pos, obj_pos)/(self.width**2 + self.height**2)**0.5) for obj_pos in self.object_positions])
+                    # else:
+                    #     reward = 0.1*(-1 + 2.71828**(-2*self._distance_to_area(self.agent_pos)/(self.width**2 + self.height**2)**0.5))
+                    # self.object_positions.append(self.agent_pos)
+                    
+                    reward = -designed_reward
                     self.object_positions.append(self.agent_pos)
+                    
                 self.agent_has_object = False
                 terminated = True
+                
+            else:
+                reward = -1.0 # Don't drop if you don't have an object
 
-        if self.steps >= self.max_steps:
-            truncated = True
-
-        # --- Prepare outputs ---
         obs: np.ndarray = self._get_obs()
         info: Dict[str, Any] = {}
 
         return obs, reward, terminated, truncated, info
+    
+    def _get_min_object_distance(self, pos: Tuple[float, float]) -> Optional[float]:
+        """Get distance to the nearest available object.
+        
+        Args:
+            Positions of the agent and the objects of the map all in (x, y) format
+            
+        Returns:
+            Minimal distance (L2) to closest object
+        """
+        
+        distances = []
+        
+        for obj_pos in self.object_positions:
+            if obj_pos is not None:
+                distances.append(self._distance(pos, obj_pos))
+                
+        return min(distances) if distances else None
 
     def _get_obs(self) -> np.ndarray:
         """Get the current observation.
@@ -207,14 +266,19 @@ class WarehouseEnv(gym.Env):
         
         obs: np.ndarray = np.zeros(11, dtype=np.float32)
         obs[0:2] = self.agent_pos
-        for i, obj in enumerate(self.object_positions):
+        
+        # Avoid objects overflow (more objects if dropped)
+        for i in range(min(3, len(self.object_positions))):
+            obj = self.object_positions[i]
             if obj is not None:
                 obs[2 + 2 * i: 4 + 2 * i] = obj
             else:
                 obs[2 + 2 * i: 4 + 2 * i] = self.agent_pos
+                
         obs[8] = float(self.agent_has_object)
         obs[9] = float(self.collision)
         obs[10] = float(self.delivery)
+        
         return obs
 
     def _get_new_position(self, action: int) -> Tuple[float, float]:
@@ -237,10 +301,13 @@ class WarehouseEnv(gym.Env):
         
         if action == 0:  # Up
             y = min(self.height - self.agent_radius, y + self.agent_velocity)
+            
         elif action == 1:  # Down
             y = max(self.agent_radius, y - self.agent_velocity)
+            
         elif action == 2:  # Left
             x = max(self.agent_radius, x - self.agent_velocity)
+            
         elif action == 3:  # Right
             x = min(self.width - self.agent_radius, x + self.agent_velocity)
         
@@ -385,6 +452,10 @@ class WarehouseEnv(gym.Env):
         if self.fig is None:
             self.fig, self.ax = plt.subplots(figsize=(8, 8))
             plt.ion()
+            
+        else: # To not overflow matplotlib
+            plt.pause(0.001)  # Small pause to allow GUI update
+            self.fig.canvas.flush_events()  # Force canvas update
 
         self.ax.clear()
         self.ax.set_xlim(0, self.width)
