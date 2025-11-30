@@ -43,11 +43,18 @@ class TDLambdaAgent:
         self.discount_factor: float = discount_factor
         self.epsilon: float = epsilon
         self.num_actions: int = env.action_space.n
-        self.feature_size: int = feedback.iht.size
+
+        # Tile or linear representations
+        if feedback.use_tiles:
+            self.feature_size: int = feedback.iht.size
+            
+        else:
+            self.feature_size: int = feedback.observation_size
+        
         self.lambda_value: float = lambda_value
 
-        self.weights: np.ndarray = np.zeros((self.num_actions, self.feature_size))
-        self.elegibility_traces: np.ndarray = np.zeros((self.feature_size))
+        self.weights: np.ndarray = np.ones((self.num_actions, self.feature_size)) * 0.1 
+        self.elegibility_traces: np.ndarray = np.zeros((self.num_actions, self.feature_size))
         
         self.episode_returns: List[float] = []
         self.episode_lengths: List[int] = []
@@ -74,7 +81,7 @@ class TDLambdaAgent:
         
         else:
             q_values = self.get_q_values(state)
-            return np.argmax(q_values)
+            return int(np.argmax(q_values))
 
     def get_q_values(self, state: np.ndarray) -> np.ndarray:
         """Computes the Q-values of all actions for a given state.
@@ -89,10 +96,14 @@ class TDLambdaAgent:
         features: List[int] = self.feedback.process_observation(state)
         q_values: np.ndarray = np.zeros(self.num_actions)
         
-        # Calculate the values of each action for the given state (linear approximation)
-        for action in range(self.num_actions):
-            for feature in features:
-                q_values[action] += self.weights[action][feature]
+        if self.feedback.use_tiles: # Tiles
+            for action in range(self.num_actions):
+                for feature in features:
+                    q_values[action] += self.weights[action][feature]
+                    
+        else: # Vectors
+            for action in range(self.num_actions):
+                q_values[action] = np.dot(self.weights[action], features)
                         
         return q_values
     
@@ -120,29 +131,25 @@ class TDLambdaAgent:
             qs_next: np.ndarray = self.get_q_values(next_state)
             q_next: float = qs_next[next_action]            
             td_error: float = reward + self.discount_factor * q_next - q_current
+            
+        # Clip TD error to prevent explosion
+        td_error = np.clip(td_error, -100, 100)
         
         features: List[int] = self.feedback.process_observation(state)
-
-        # for feature in range(self.feature_size):
-        #     self.elegibility_traces[feature] *= self.lambda_value * self.discount_factor
-        #     if feature in features:
-        #         self.elegibility_traces[feature] += 1
-
-        # for action_p in range(self.num_actions):
-        #     for feature in range(self.feature_size):
-        #         self.weights[action_p][feature] += self.learning_rate * td_error * self.elegibility_traces[feature]
-        # Update eligibility traces
-        self.elegibility_traces *= self.lambda_value * self.discount_factor
-        for feature in features:
-            self.elegibility_traces[feature] += 1
-
-        # Update weights ONLY for the action taken
-        self.weights[action] += self.learning_rate * td_error * self.elegibility_traces
         
-        # Reset traces if terminal state
-        if terminated:
-            self.elegibility_traces = np.zeros(self.feature_size)
+        # Decay traces
+        self.elegibility_traces *= self.lambda_value * self.discount_factor
 
+        # Replace traces instead of update, more stable behaviour
+        if self.feedback.use_tiles: # Tile update
+            for feature in features:
+                self.elegibility_traces[action][feature] = 1
+
+        else: # Vector update
+            self.elegibility_traces[action] = features  # Add current features to trace
+            
+        self.weights += self.learning_rate * td_error * self.elegibility_traces
+        self.weights = np.clip(self.weights, -100, 100)
                 
     def train(self, num_episodes: int, decay_start: float, decay_rate: float, 
               min_epsilon: float, episodes_update: int = 1000) -> None:
@@ -160,63 +167,62 @@ class TDLambdaAgent:
 
         for episode in range(num_episodes):
             # Episode setup
-            state, _ = self.env.reset()
+            obs, _ = self.env.reset()
             
             # Reset elegibility traces
-            self.elegibility_traces = np.zeros(self.feature_size)
+            self.elegibility_traces = np.zeros((self.num_actions, self.feature_size))
 
             
             # Exponential decrease of epsilon to minimum value from marked start
             if episode >= num_episodes*decay_start:
-                self.epsilon *= decay_rate
-                self.epsilon = np.max([min_epsilon,self.epsilon])
+                self.epsilon = max(min_epsilon, self.epsilon * decay_rate)
             
             self.epsilon_history.append(self.epsilon)
             
             # First action
-            action: int = self.get_action(state, self.epsilon)            
-            n_steps: int = 0
+            action: int = self.get_action(obs, self.epsilon)            
             
-            # Episode generation
-            total_undiscounted_return: float = 0
+            episode_return: float = 0.0
+            episode_length: int = 0
+            terminated: bool = False
+            truncated: bool = False
             
-            while True:                                        
-                next_state, reward, terminated, truncated, _ = self.env.step(action)  
-                total_undiscounted_return += reward  
-                        
-                next_action = self.get_action(next_state, self.epsilon)
-                self.update(state, action, reward, next_state, next_action, terminated)  
-                  
-                state = next_state
-                action = next_action                
-                n_steps += 1
+            while not terminated and not truncated:
+                next_obs, reward, terminated, truncated, _ = self.env.step(action)
                 
-                if terminated or truncated:
-                    break
+                next_action = self.get_action(next_obs, self.epsilon)
+                
+                self.update(obs, action, reward, next_obs, next_action, terminated)
+                
+                episode_return += reward
+                episode_length += 1
+                
+                obs = next_obs
+                action = next_action
             
             # Track metrics
-            self.episode_returns.append(total_undiscounted_return)
-            self.episode_lengths.append(n_steps)
+            self.episode_returns.append(episode_return)
+            self.episode_lengths.append(episode_length)
             
             # Track success (reached target)
-            success: bool = terminated and total_undiscounted_return > 5  # Adjust threshold
+            success: bool = terminated and episode_return > 0
             recent_successes.append(1 if success else 0)
             
             if len(recent_successes) > success_window:
                 recent_successes.pop(0)
             
-            current_success_rate: float = np.mean(recent_successes) * 100
+            current_success_rate: float = sum(recent_successes) / len(recent_successes)
             self.success_rate.append(current_success_rate)
             
             if episode % episodes_update == 0:                      
-                print(f"Episode {episode}, Total undiscounted return: {total_undiscounted_return}, Epsilon: {self.epsilon}")
+                print(f"Episode {episode}, Total undiscounted return: {episode_return}, Epsilon: {self.epsilon}")
                 # print(f"Steps: {n_steps}")
                 # print(f"Success Rate (last {success_window}): {current_success_rate:.1f}%")
                 # print(f"Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
                 # you can save the current state of the agent, if you find it useful    
 
     
-    def evaluate(self, num_episodes: int) -> float:
+    def evaluate(self, num_episodes: int) -> tuple[float, float]:
         """Evaluate the agent's performance over a specified number of episodes.
         
         Args:
@@ -227,25 +233,39 @@ class TDLambdaAgent:
         """
         
         total_returns: List[float] = []
+        successes: List[int] = []
         
-        for _  in range(num_episodes):
+        for episode  in range(num_episodes):
             state, _ = self.env.reset()
             total_undiscounted_return: float = 0
             terminated: bool = False
+            truncated: bool = False
+            step_count: int = 0
+            max_eval_steps: int = 500
             
-            while not terminated:
-                action: int = self.get_action(state, self.epsilon)  # Greedy policy
-                next_state, reward, terminated, _, _ = self.env.step(action)
+            while not terminated and not truncated and step_count < max_eval_steps:
+                action: int = self.get_action(state, 0.0)  # Evaluate the policy
+                next_state, reward, terminated, truncated, _ = self.env.step(action)
+                
+                if step_count % 50 == 0:
+                    print(f"  Ep {episode}, Step {step_count}, Pos: {state[:2]}, Action: {action}")
+                
                 self.env.render()
                 state = next_state
                 total_undiscounted_return += reward
+                step_count += 1
+                
+            if step_count >= max_eval_steps:
+                print(f"  Episode {episode} hit step limit - agent got stuck")
             
+            successes.append(1 if reward > 0 else 0)
             total_returns.append(total_undiscounted_return)
         
-        avg_return: float = np.mean(total_returns)
+        avg_return: float = float(np.mean(total_returns))
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
+        success_rate: float = float(np.mean(np.array(successes)))
         
-        return avg_return
+        return avg_return, success_rate
     
     def plot_training_metrics(self, num_episodes: int, avg_return: float) -> None:
         """Plot training progress.
@@ -289,14 +309,96 @@ class TDLambdaAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
+        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{epsilon}_{success_rate}_{avg_return:.2f}.png')
         plt.show()
 
 
 if __name__ == "__main__":
+    # Select environment variant
+    env_variant:str = "1"  # Change to "2" or "3" for other variants
+    workspace_def:str = "v" #tile-coding or vectorized space
+    
+    if env_variant == "1":
+        just_pick = True
+        random_objects = False
+        success_threshold = 0.95
+        
+        # Common params
+        discount_factor: float = 0.99 # Gamma: importance of future rewards
+        lambda_value: float = 0.8
+        decay_rate: float = 0.995 # Control of the (exponential) decrease of epsilon
+        min_epsilon: float = 0.02
+        episodes_update: int = 100
+
+        if workspace_def == "t":
+            # Agent params
+            learning_rate: float = 0.0125
+            epsilon: float = 0.3
+            
+            # Training params
+            decay_start: float = 0.5 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 5000
+            
+        else:
+            # Agent params
+            learning_rate: float = 0.01
+            epsilon: float = 0.5
+            
+            # Training params
+            decay_start: float = 0.6 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 15000
+
+    elif env_variant == "2":
+        just_pick = False
+        random_objects = False
+        success_threshold = 0.9
+        
+        # Common params
+        discount_factor: float = 0.995 # Gamma: importance of future rewards
+        lambda_value: float = 0.7
+        decay_rate: float = 0.998 # Control of the (exponential) decrease of epsilon
+        min_epsilon: float = 0.05
+        episodes_update: int = 100
+
+        if workspace_def == "t":
+            # Agent params
+            learning_rate: float = 0.003
+            epsilon: float = 0.5
+            
+            # Training params
+            decay_start: float = 0.4 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 50000
+            
+        else:
+            # Agent params
+            learning_rate: float = 0.005
+            epsilon: float = 0.5
+            
+            # Training params
+            decay_start: float = 0.3 # Start epsilon decay at n% of total episodes
+            num_episodes: int = 30000
+            
+    else:
+        just_pick = False
+        random_objects = True
+        success_threshold = 0.85
+        
+        # Agent params
+        learning_rate: float = 0.1
+        discount_factor: float = 0.99 # Gamma: importance of future rewards
+        epsilon: float = 0.5
+        lambda_value: float = 0.7
+        
+        # Training params
+        decay_start: float = 0.7 # Start epsilon decay at n% of total episodes
+        decay_rate: float = 0.999 # Control of the (exponential) decrease of epsilon
+        min_epsilon: float = 0.05
+        num_episodes: int = 10000
+        episodes_update: int = 100
+
     
     # Instantiate environment and representation
-    env: WarehouseEnv = WarehouseEnv(just_pick=True, random_objects=False, render_mode="human")
+    env: WarehouseEnv = WarehouseEnv(just_pick, random_objects) #, render_mode="human")
     warehouse_width: float = 10.0
     warehouse_height: float = 10.0
 
@@ -307,37 +409,34 @@ if __name__ == "__main__":
     
     target_area: Tuple[float, float, float, float] = (2.5, 9.0, 5.0, 1.0)
     
-    feedback: FeedbackConstruction = FeedbackConstruction((warehouse_width, warehouse_height), 
-                                 (n_tiles_width, n_tiles_height), 
-                                 n_tilings, target_area)
+    feedback: FeedbackConstruction = FeedbackConstruction(
+                                (warehouse_width, warehouse_height), 
+                                (n_tiles_width, n_tiles_height), 
+                                n_tilings, target_area,
+                                use_tiles=workspace_def == "t",
+                                just_pick=just_pick)
     
-    #Initialize the agent
-    learning_rate: float = 0.1
-    discount_factor: float = 0.99 # Gamma: importance of future rewards
-    epsilon: float = 0.3
-    lambda_value: float = 0.8
-    
+    #Initialize agent    
     agent: TDLambdaAgent = TDLambdaAgent(env,
                        feedback, 
                        learning_rate, 
                        discount_factor, 
                        epsilon,
                        lambda_value)
-    3
-    # Train the agent
-    decay_start: float = 0.2 # Start epsilon decay at n% of total episodes
-    decay_rate: float = 0.9995 # Control of the (exponential) decrease of epsilon
-    min_epsilon: float = 0.05 
-    num_episodes: int = 10000
-    episodes_update: int = 100
     
+    # Train agent
     agent.train(num_episodes, decay_start, decay_rate, min_epsilon, episodes_update)
     
-    # Evaluate the agent
-    avg_return: float = agent.evaluate(num_episodes=1)
+    # Evaluate agent
+    avg_return: float
+    success_rate: float
+    avg_return, success_rate = agent.evaluate(num_episodes=500)
+    
+    print(f"Avg_return: {avg_return}\nSucess rate: {success_rate}\nSuccess needed: {success_threshold}")
+
     
     # Save the agent object into memory    
-    with open(f'models/td_lambda_trained_{num_episodes}_{learning_rate}_{epsilon}_{avg_return:.2f}.pkl', 'wb') as f:
+    with open(f'models/td_lambda_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{epsilon}_{success_rate}_{avg_return:.2f}.pkl', 'wb') as f:
         pickle.dump(agent, f)
     
     # Plot the training results
