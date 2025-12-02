@@ -413,7 +413,7 @@ class TDLambdaAgent:
         For vectorized: reshape if possible, else plot as 1D.
         """
         num_actions = self.num_actions
-        n_cols = min(4, num_actions)
+        n_cols = min(3, num_actions)
         n_rows = (num_actions + n_cols - 1) // n_cols
         fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
         axes = axes.flatten() if num_actions > 1 else [axes]
