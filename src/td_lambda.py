@@ -406,6 +406,52 @@ class TDLambdaAgent:
         plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
         plt.show()
 
+    def plot_value_heatmaps(self, num_episodes: int, env_variant: str, workspace_def: str, learning_rate: float, n_tiles_height: float, n_tiles_width: float):
+        """
+        Plot the value weights for each action as heatmaps.
+        For tile coding: reshape weights to (n_tiles_height, n_tiles_width).
+        For vectorized: reshape if possible, else plot as 1D.
+        """
+        num_actions = self.num_actions
+        n_cols = min(4, num_actions)
+        n_rows = (num_actions + n_cols - 1) // n_cols
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
+        axes = axes.flatten() if num_actions > 1 else [axes]
+
+        for action in range(num_actions):
+            if self.feedback.use_tiles:
+                n_tilings = self.feedback.num_tilings
+                weights = self.weights[action]
+                tile_weights = np.zeros((n_tiles_height, n_tiles_width))
+                for tiling in range(n_tilings):
+                    offset = tiling * n_tiles_height * n_tiles_width
+                    tile_weights += weights[offset:offset + n_tiles_height * n_tiles_width].reshape(n_tiles_height, n_tiles_width)
+                tile_weights /= n_tilings
+                im = axes[action].imshow(tile_weights, cmap='viridis', origin='lower')
+                axes[action].set_title(f"Action {action} Weights (Tiles)")
+                plt.colorbar(im, ax=axes[action])
+            else:
+                features = self.weights[action]
+                size = int(np.sqrt(len(features)))
+                if size * size == len(features):
+                    im = axes[action].imshow(features.reshape(size, size), cmap='viridis', origin='lower')
+                    axes[action].set_title(f"Action {action} Weights (Vector 2D)")
+                    plt.colorbar(im, ax=axes[action])
+                else:
+                    axes[action].plot(features)
+                    axes[action].set_title(f"Action {action} Weights (Vector 1D)")
+                    axes[action].set_xlabel("Feature Index")
+                    axes[action].set_ylabel("Weight")
+
+        # Hide unused axes if any
+        for i in range(num_actions, len(axes)):
+            axes[i].axis('off')
+
+        plt.tight_layout()
+        plt.savefig(f'plots/td_lambda_heatmap_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
+        plt.show()
+
+
 def main():
     # Set seed for reproducibility
     SEED = 42
@@ -560,6 +606,7 @@ def main():
     
     # Plot the training results
     agent.plot_training_metrics(num_episodes, avg_return, env_variant, workspace_def, learning_rate, decay_start, decay_end)
+    agent.plot_value_heatmaps(num_episodes, env_variant, workspace_def, learning_rate, n_tiles_width, n_tiles_height)
 
 if __name__ == "__main__":
     main()
