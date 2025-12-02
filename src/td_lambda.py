@@ -1,9 +1,16 @@
 import numpy as np
+import random
 from warehouse_environment import WarehouseEnv
 from representation import FeedbackConstruction
 import pickle
 import matplotlib.pyplot as plt
 from typing import Optional, Tuple, List
+
+
+def set_seed(seed: int = 42) -> None:
+    """Set random seeds for reproducibility."""
+    random.seed(seed)
+    np.random.seed(seed)
 
 
 class TDLambdaAgent:
@@ -309,11 +316,15 @@ class TDLambdaAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{epsilon}_{success_rate}_{avg_return:.2f}.png')
+        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon}_{self.success_rate:.2f}_{avg_return:.2f}.png')
         plt.show()
 
 
 if __name__ == "__main__":
+    # Set seed for reproducibility
+    SEED = 42
+    set_seed(SEED)
+    
     # Select environment variant
     env_variant:str = "2"  # Change to "2" or "3" for other variants
     workspace_def:str = "v" #tile-coding or vectorized space
@@ -385,18 +396,32 @@ if __name__ == "__main__":
         random_objects = True
         success_threshold = 0.85
         
-        # Agent params
-        learning_rate: float = 0.1
-        discount_factor: float = 0.99 # Gamma: importance of future rewards
-        epsilon: float = 0.5
-        lambda_value: float = 0.7
-        
-        # Training params
-        decay_start: float = 0.7 # Start epsilon decay at n% of total episodes
-        decay_rate: float = 0.999 # Control of the (exponential) decrease of epsilon
+        # Common params
+        discount_factor: float = 0.99
+        lambda_value: float = 0.8
+        decay_rate: float = 0.9995
         min_epsilon: float = 0.05
-        num_episodes: int = 10000
         episodes_update: int = 100
+
+        if workspace_def == "t":
+            # Agent params for tile coding (env 3)
+            learning_rate: float = 0.005
+            epsilon: float = 0.8
+            
+            # Training params
+            decay_start: float = 0.3
+            num_episodes: int = 30000
+            
+        else:
+            # Agent params for vectorized (env 3)
+            learning_rate: float = 0.0001
+            epsilon: float = 1.0
+            lambda_value: float = 0.9
+            
+            # Training params
+            decay_rate: float = 0.9997
+            decay_start: float = 0.2
+            num_episodes: int = 100000
 
     
     # Instantiate environment and representation
@@ -416,7 +441,8 @@ if __name__ == "__main__":
                                 (n_tiles_width, n_tiles_height), 
                                 n_tilings, target_area,
                                 use_tiles=workspace_def == "t",
-                                just_pick=just_pick)
+                                just_pick=just_pick,
+                                random_objects=random_objects)
     
     #Initialize agent    
     agent: TDLambdaAgent = TDLambdaAgent(env,
