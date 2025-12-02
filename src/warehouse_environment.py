@@ -79,17 +79,18 @@ class WarehouseEnv(gym.Env):
 
         self.reset()
 
-    def reset(self, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         """Resets the environment to its initial state.
         
         Args:
+            seed: Random seed for reproducibility.
             options: Optional configuration for resetting the environment.
             
         Returns:
             A tuple containing the initial observation and an info dictionary.
         """
         
-        super().reset()
+        super().reset(seed=seed)
 
         self.agent_pos: Tuple[float, float] = self._get_random_empty_position()
 
@@ -179,7 +180,7 @@ class WarehouseEnv(gym.Env):
                 #     reward = 0.5 * progress
                 
                 self.agent_pos = new_pos
-                reward += step_penalty
+                # reward already set to step_penalty at start, no need to add again
 
             else:
                 self.collision = True

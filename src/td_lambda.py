@@ -6,13 +6,15 @@ import pickle
 import matplotlib.pyplot as plt
 from typing import Optional, Tuple, List
 from tqdm import trange
+from torch.utils.tensorboard import SummaryWriter
+import os
+from datetime import datetime
 
 
 def set_seed(seed: int = 42) -> None:
     """Set random seeds for reproducibility."""
     random.seed(seed)
     np.random.seed(seed)
-
 
 class TDLambdaAgent:
     """TDLambdaAgent is an implementation of the TD(lambda)
@@ -34,7 +36,8 @@ class TDLambdaAgent:
     
     def __init__(self, env: WarehouseEnv, feedback: FeedbackConstruction, 
                  learning_rate: float = 0.5, discount_factor: float = 0.9, 
-                 epsilon: float = 0.5, lambda_value: float = 0.5) -> None:
+                 epsilon: float = 0.5, lambda_value: float = 0.5,
+                 seed: Optional[int] = None) -> None:
         """Initializes the TDLambdaAgent with the given parameters.
         
         Args:
@@ -43,7 +46,13 @@ class TDLambdaAgent:
             learning_rate: The learning rate for updating the weights. Defaults to 0.5.
             discount_factor: The discount factor for future rewards. Defaults to 0.9.
             epsilon: The probability of choosing a random action. Defaults to 0.5.
+            seed: Random seed for reproducibility. Defaults to None.
         """
+        
+        self.seed: Optional[int] = seed
+        
+        # Create dedicated RNG for deterministic action selection
+        self.rng: np.random.Generator = np.random.default_rng(seed)
 
         self.env: WarehouseEnv = env
         self.feedback: FeedbackConstruction = feedback
@@ -84,8 +93,8 @@ class TDLambdaAgent:
         if epsilon is None:
             epsilon = self.epsilon
         
-        if np.random.random() < epsilon:
-            return self.env.action_space.sample()  # Random action
+        if self.rng.random() < epsilon and epsilon != 0.0:
+            return int(self.rng.integers(0, self.num_actions))  # Random action using agent's RNG
         
         else:
             q_values = self.get_q_values(state)
@@ -148,19 +157,20 @@ class TDLambdaAgent:
         # Decay traces
         self.elegibility_traces *= self.lambda_value * self.discount_factor
 
-        # Replace traces instead of update, more stable behaviour
-        if self.feedback.use_tiles: # Tile update
+        # Update traces for the current state-action
+        if self.feedback.use_tiles: # Tile update - replacing traces
             for feature in features:
                 self.elegibility_traces[action][feature] = 1
 
-        else: # Vector update
-            self.elegibility_traces[action] = features  # Add current features to trace
+        else: # Vector update - accumulating traces
+            # For linear function approximation: e(s,a) += gradient of Q(s,a) = features
+            self.elegibility_traces[action] += features
             
         self.weights += self.learning_rate * td_error * self.elegibility_traces
         self.weights = np.clip(self.weights, -100, 100)
                 
     def train(self, num_episodes: int, decay_start: float, decay_rate: float, 
-              min_epsilon: float, episodes_update: int = 1000) -> None:
+              min_epsilon: float, episodes_update: int = 1000, log_dir: Optional[str] = None) -> None:
         """Train the agent using the TD(lambda) algorithm.
         
         Args:
@@ -168,7 +178,37 @@ class TDLambdaAgent:
             decay_start: The fraction of episodes after which epsilon decay starts.
             decay_rate: The exponential decay rate for epsilon.
             min_epsilon: The minimum value for epsilon.
+            episodes_update: Frequency of progress updates.
+            log_dir: Directory for TensorBoard logs. If None, creates timestamped dir.
         """
+        
+        # Setup TensorBoard with descriptive name
+        repr_type = "tile" if self.feedback.use_tiles else "vec"
+        env_type = "env1" if self.feedback.just_pick else ("env3" if self.feedback.random_objects else "env2")
+        
+        if log_dir is None:
+            log_dir = f"runs/td_lambda_{env_type}_{repr_type}_lr{self.learning_rate}_g{self.discount_factor}_l{self.lambda_value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        os.makedirs(log_dir, exist_ok=True)
+        writer = SummaryWriter(log_dir)
+        print(f"TensorBoard logs will be saved to: {log_dir}")
+        print(f"Run 'tensorboard --logdir={os.path.dirname(log_dir)}' to view")
+        
+        # Log hyperparameters
+        hparams = {
+            'algorithm': 'TD(lambda)',
+            'env_type': env_type,
+            'representation': repr_type,
+            'learning_rate': self.learning_rate,
+            'discount_factor': self.discount_factor,
+            'lambda': self.lambda_value,
+            'epsilon_start': self.epsilon,
+            'epsilon_min': min_epsilon,
+            'decay_rate': decay_rate,
+            'decay_start': decay_start,
+            'num_episodes': num_episodes,
+            'feature_size': self.feature_size
+        }
+        writer.add_text('Hyperparameters', str(hparams), 0)
         
         success_window: int = 100  # Track success over last N episodes
         recent_successes: List[int] = []
@@ -176,13 +216,16 @@ class TDLambdaAgent:
         progress_bar = trange(num_episodes)
 
         for episode in progress_bar:
-            # Episode setup
-            obs, _ = self.env.reset()
+            # Episode setup - seed each episode deterministically for reproducibility
+            if self.seed is not None:
+                episode_seed = self.seed + episode
+                obs, _ = self.env.reset(seed=episode_seed)
+            else:
+                obs, _ = self.env.reset()
             
             # Reset elegibility traces
             self.elegibility_traces = np.zeros((self.num_actions, self.feature_size))
 
-            
             # Exponential decrease of epsilon to minimum value from marked start
             if episode >= num_episodes*decay_start:
                 self.epsilon = max(min_epsilon, self.epsilon * decay_rate)
@@ -224,7 +267,31 @@ class TDLambdaAgent:
             current_success_rate: float = sum(recent_successes) / len(recent_successes)
             self.success_rate.append(current_success_rate)
             
-            progress_bar.set_description(f"Epsilon: {self.epsilon:.3f} | Success Rate (last {success_window}): {current_success_rate:.1f}% | N steps (last {success_window}): {str(int(np.mean(self.episode_lengths[-success_window:]))).rjust(3, "0")} | Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
+            # Log to TensorBoard - Basic metrics
+            writer.add_scalar('Training/Episode_Return', episode_return, episode)
+            writer.add_scalar('Training/Episode_Length', episode_length, episode)
+            writer.add_scalar('Training/Success_Rate', current_success_rate * 100, episode)
+            writer.add_scalar('Training/Epsilon', self.epsilon, episode)
+            
+            # Log moving averages every 100 episodes
+            if episode > 0 and episode % 100 == 0:
+                window = min(100, len(self.episode_returns))
+                avg_return_100 = np.mean(self.episode_returns[-window:])
+                avg_length_100 = np.mean(self.episode_lengths[-window:])
+                writer.add_scalar('MovingAvg/Return_100', avg_return_100, episode)
+                writer.add_scalar('MovingAvg/Length_100', avg_length_100, episode)
+            
+            # Update progress bar description only every 100 episodes to avoid spam
+            if episode % 100 == 0:
+                progress_bar.set_description(f"Eps: {self.epsilon:.3f} | SR: {current_success_rate*100:.1f}% | Steps: {int(np.mean(self.episode_lengths[-success_window:]))} | Ret: {np.mean(self.episode_returns[-success_window:]):.2f}")
+        
+        # Log final metrics
+        writer.add_scalar('Final/Success_Rate', current_success_rate * 100, num_episodes)
+        writer.add_scalar('Final/Avg_Return', np.mean(self.episode_returns[-100:]), num_episodes)
+        
+        # Close TensorBoard writer
+        writer.close()
+        print(f"Training complete. TensorBoard logs saved to: {log_dir}")
 
     
     def evaluate(self, num_episodes: int) -> tuple[float, float]:
@@ -244,15 +311,21 @@ class TDLambdaAgent:
         progress_bar = trange(num_episodes)
 
         for episode in progress_bar:
-            state, _ = self.env.reset()
+            # Seed each evaluation episode deterministically (offset from training)
+            if self.seed is not None:
+                eval_seed = self.seed + 100000 + episode  # Offset to get different episodes than training
+                state, _ = self.env.reset(seed=eval_seed)
+            else:
+                state, _ = self.env.reset()
             total_undiscounted_return: float = 0
             terminated: bool = False
             truncated: bool = False
             step_count: int = 0
             max_eval_steps: int = 500
+            success: bool = False
             
             while not terminated and not truncated and step_count < max_eval_steps:
-                action: int = self.get_action(state, 0.0)  # Evaluate the policy
+                action: int = self.get_action(state, 0.0)  # Greedy evaluation
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
                 
                 self.env.render()
@@ -260,13 +333,20 @@ class TDLambdaAgent:
                 total_undiscounted_return += reward
                 step_count += 1
                 
+                # Check for success (positive terminal reward)
+                if terminated and reward > 0:
+                    success = True
+                
             if step_count >= max_eval_steps:
                 print(f"  Episode {episode} hit step limit - agent got stuck")
             
-            successes.append(1 if reward > 0 else 0)
+            successes.append(1 if success else 0)
             total_returns.append(total_undiscounted_return)
             
-            progress_bar.set_description(f"Epsilon: {self.epsilon:.3f} | Success Rate (last {success_window}): {np.mean(successes[-success_window:]):.1f}% | N steps (last {success_window}): {str(int(np.mean(self.episode_lengths[-success_window:]))).rjust(3, "0")} | Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
+            # Show evaluation metrics (not training metrics)
+            eval_success_rate = 100 * np.mean(successes[-success_window:])
+            eval_avg_return = np.mean(total_returns[-success_window:])
+            progress_bar.set_description(f"Eval | Success Rate (last {success_window}): {eval_success_rate:.1f}% | Avg Return (last {success_window}): {eval_avg_return:.2f}")
         
         avg_return: float = float(np.mean(total_returns))
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
@@ -316,7 +396,7 @@ class TDLambdaAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
+        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
         plt.show()
 
 
@@ -327,7 +407,7 @@ if __name__ == "__main__":
     
     # Select environment variant
     env_variant:str = "2"  # Change to "2" or "3" for other variants
-    workspace_def:str = "v" #tile-coding or vectorized space
+    workspace_def:str = "t" #tile-coding or vectorized space
     
     if env_variant == "1":
         just_pick = True
@@ -348,16 +428,17 @@ if __name__ == "__main__":
             
             # Training params
             decay_start: float = 0.5 # Start epsilon decay at n% of total episodes
-            num_episodes: int = 5000
+            num_episodes: int = 3000
             
         else:
             # Agent params
-            learning_rate: float = 0.0005
+            learning_rate: float = 0.002  
             epsilon: float = 1.0
             
             # Training params
-            decay_start: float = 0.0 # Start epsilon decay at n% of total episodes
-            num_episodes: int = 50000
+            decay_start: float = 0.3  
+            decay_rate: float = 0.9995  
+            num_episodes: int = 5000
 
     elif env_variant == "2":
         just_pick = False
@@ -450,7 +531,8 @@ if __name__ == "__main__":
                        learning_rate, 
                        discount_factor, 
                        epsilon,
-                       lambda_value)
+                       lambda_value,
+                       seed=SEED)
     
     # Train agent
     agent.train(num_episodes, decay_start, decay_rate, min_epsilon, episodes_update)
