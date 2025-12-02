@@ -306,4 +306,61 @@ En ambos entornos, el agente TD($\lambda$) con \textit{tile coding} logra aprend
 La combinación de TD($\lambda$) y \textit{tile coding} permite resolver de forma robusta los entornos de almacén con objetos fijos, tanto en tareas de recogida como de entrega. La representación vectorizada no resulta adecuada en estos casos, mientras que los tiles solapados facilitan la generalización y el aprendizaje eficiente.
 
 
+\section{TD $\lambda$: Entorno 3}
+
+Este entorno se resolvió partiendo del pipeline del Entorno 2. Se reutilizó exactamente la misma representación con \textit{tile coding} y la misma estructura de recompensa por subobjetivos (recogida y entrega), manteniendo una configuración de hiperparámetros considerablemente buena que ya había mostrado estabilidad en la fase anterior. Con esa base, se amplió el entrenamiento a \emph{30\,000} episodios para consolidar la política y se fijó una única semilla aleatoria para garantizar reproducibilidad. Con esta configuración, el agente entrenó correctamente y alcanzó un desempeño estable.
+
+\subsection{Configuración y entrenamiento}
+El procedimiento fue:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+    \item Inicializar el entorno y la representación exactamente como en el Entorno 2.
+    \item Fijar una semilla global única para todas las fuentes de aleatoriedad del experimento.
+    \item Entrenar durante 30\,000 episodios con el calendario de exploración y el factor de traza $\lambda$ heredados del Entorno 2.
+    \item Registrar retornos, longitudes, tasa de éxito y evolución de $\epsilon$ para su comparación posterior.
+\end{enumerate}
+
+\subsection{Hiperparámetros utilizados}
+A continuación se dejan explícitos los diales principales para facilitar su edición. Los valores concretos se rellenan cuando se cierre la batería definitiva de pruebas.
+
+\begin{lstlisting}[language=Python,caption={Hiperparámetros del Entorno 3 (rellenar valores finales)}]
+# Semilla y episodios
+SEED = 123                # semilla fija
+NUM_EPISODES = 30000      # entrenamiento extendido
+
+# Representación (igual que Entorno 2)
+N_TILES_WIDTH  = 10
+N_TILES_HEIGHT = 10
+N_TILINGS      = 8
+TARGET_AREA    = (2.5, 8.0, 1.0, 2.0)
+
+# Agente TD(lambda)
+LEARNING_RATE   = ...     # p.ej. 0.003 si es caso de entrega
+DISCOUNT_FACTOR = ...     # p.ej. 0.995 en tareas largas
+LAMBDA          = ...     # traza de elegibilidad
+
+# Exploración
+EPSILON0     = ...
+DECAY_START  = ...
+DECAY_RATE   = ...
+MIN_EPSILON  = ...
+
+# Recompensa (mismo esquema que Entorno 2)
+C_STEP = ...              # penalización por paso (centésimas)
+K_L1   = ...              # pendiente hacia el subobjetivo activo (L1)
+R_GOAL = ...              # recompensa terminal positiva
+R_COLL = ...              # penalización por colisión
+\end{lstlisting}
+
+
+\subsection{Resultados}
+Con 30\,000 episodios y la semilla fija, el agente mostró aprendizaje sostenido y completó la tarea con estabilidad. La comparación directa con el Entorno 2 es inmediata porque se mantiene la misma representación y la misma descomposición por subobjetivos; el incremento de episodios se introdujo únicamente para reforzar la consolidación de la política.
+
+% descomentar luego
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{../plots/td_lambda_metrics_3_....png}
+%     \caption{Métricas de entrenamiento en Entorno 3: retornos, media móvil, longitudes y tasa de éxito.}
+%     \label{fig:tdlambda-e3}
+% \end{figure}
+
 \end{document}

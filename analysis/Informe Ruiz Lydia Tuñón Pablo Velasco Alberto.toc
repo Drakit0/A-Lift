@@ -18,3 +18,7 @@
 \contentsline {subsection}{\numberline {2.5}Comparativa de hiperparámetros y entrenamiento}{7}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}Resultados}{8}{subsection.2.6}%
 \contentsline {subsection}{\numberline {2.7}Conclusión}{9}{subsection.2.7}%
+\contentsline {section}{\numberline {3}TD $\lambda $: Entorno 3}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Configuración y entrenamiento}{10}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Hiperparámetros utilizados}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Resultados}{11}{subsection.3.3}%
