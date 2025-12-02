@@ -306,6 +306,7 @@ class TDLambdaAgent:
         
         total_returns: List[float] = []
         successes: List[int] = []
+        episodes_length: List[int] = []
         
         success_window: int = 100
         progress_bar = trange(num_episodes)
@@ -339,6 +340,7 @@ class TDLambdaAgent:
             
             successes.append(1 if success else 0)
             total_returns.append(total_undiscounted_return)
+            episodes_length.append(step_count)
             
             # Show evaluation metrics (not training metrics)
             eval_success_rate = 100 * np.mean(successes[-success_window:])
@@ -348,7 +350,7 @@ class TDLambdaAgent:
         avg_return: float = float(np.mean(total_returns))
         success_rate: float = float(np.mean(np.array(successes)))
         
-        return avg_return, success_rate
+        return avg_return, success_rate, total_returns, successes, episodes_length
     
     def plot_training_metrics(self, num_episodes: int, avg_return: float, env_variant: str, workspace_def: str, learning_rate: float, decay_start: float, decay_end: float) -> None:
         """Plot training progress.
@@ -447,6 +449,36 @@ class TDLambdaAgent:
         plt.tight_layout()
         plt.savefig(f'plots/td_lambda_heatmap_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
         plt.show()
+    
+    def plot_evaluation_metrics(self, total_returns: List[float], successes: List[int], episodes_length: List[int], success_threshold: float, num_episodes: int, env_variant: str, workspace_def: str, learning_rate: float):
+        """
+        Plot violin plots for evaluation metrics: returns, successes, and episode lengths.
+        """
+
+        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+        # Violin plot for total returns
+        axes[0].violinplot(total_returns, showmeans=True)
+        axes[0].set_title('Total Returns')
+        axes[0].set_xlabel('Episodes')
+        axes[0].set_ylabel('Return')
+
+        # Violin plot for successes (binary)
+        axes[1].violinplot(successes, showmeans=True)
+        axes[1].axhline(y=success_threshold, linestyle=':', color='red', linewidth=2)
+        axes[1].set_title('Successes')
+        axes[1].set_xlabel('Episodes')
+        axes[1].set_ylabel('Success (1=Yes, 0=No)')
+
+        # Violin plot for episode lengths
+        axes[2].violinplot(episodes_length, showmeans=True)
+        axes[2].set_title('Episode Lengths')
+        axes[2].set_xlabel('Episodes')
+        axes[2].set_ylabel('Steps')
+
+        plt.tight_layout()
+        plt.savefig(f'plots/td_lambda_evaluation_violin_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
+        plt.show()
 
 
 def main():
@@ -540,7 +572,7 @@ def main():
             # Training params
             decay_start: float = 0.3
             decay_end: float = 0.7
-            num_episodes: int = 30000
+            num_episodes: int = 29000
             
         else:
             # Agent params for vectorized (env 3)
@@ -591,7 +623,7 @@ def main():
     # Evaluate agent
     avg_return: float
     success_rate: float
-    avg_return, success_rate = agent.evaluate(num_episodes=500)
+    avg_return, success_rate, total_returns, successes, episodes_length = agent.evaluate(num_episodes=500)
     
     print(f"Results over {num_episodes} episodes:")
     print(f"Avg return: {avg_return}\nSucess rate:{'\33[41m' if success_rate < success_threshold else '\33[42m'} {success_rate} {'\33[0m'}\nSuccess needed: {success_threshold}")
@@ -604,6 +636,7 @@ def main():
     # Plot the training results
     agent.plot_training_metrics(num_episodes, avg_return, env_variant, workspace_def, learning_rate, decay_start, decay_end)
     agent.plot_value_heatmaps(num_episodes, env_variant, workspace_def, learning_rate, n_tiles_width, n_tiles_height)
+    agent.plot_evaluation_metrics(total_returns, successes, episodes_length, success_threshold, num_episodes, env_variant, workspace_def, learning_rate)
 
 if __name__ == "__main__":
     main()
