@@ -170,7 +170,7 @@
 \newpage
 \section{Navegación con tile coding}
 
-Esta sección documenta el diseño, las decisiones y los resultados de la práctica de navegación con aproximación lineal y \textit{tile coding}. El objetivo es aprender una política que desplace al agente en un mapa de 10\,m por 10\,m hasta una zona objetivo evitando colisiones, usando acciones discretas de desplazamiento cardinal con paso de 0.25\,m. Se parte de una observación cruda $(x,y,\text{collision},\text{target})$ y se construye una representación dispersa mediante mosaicos solapados.
+Esta sección documenta el diseño, las decisiones y los resultados de la práctica de navegación con aproximación lineal y \textit{tile coding}. El objetivo es aprender una política que desplace al agente en un mapa de 10\,m por 10\,m hasta una zona objetivo evitando colisiones, usando acciones discretas de desplazamiento cardinal con paso de 0.25\,m. Se parte de una observación cruda $(x,y,\text{collision},\text{target})$ y se construye una representación dispersa mediante tiles solapados.
 
 \subsection{Representación y generalización}
 El estado continuo no se presta a una tabla de valores, así que se emplea \textit{tile coding} con varias rejillas solapadas. Cada rejilla activa exactamente un índice, por lo que el vector de entrada $\mathbf{x}(s)$ tiene exactamente $n_{\text{tilings}}$ unos y el resto ceros. La normalización por anchura y altura de tile desacopla la escala del mapa de la discretización. Se aplican desplazamientos distintos por rejilla con paso relativo $(3,1)$ en los ejes para romper alineamientos regulares y evitar patrones repetitivos que degradan la generalización. Con $n_{\text{tiles\_width}}=10$, $n_{\text{tiles\_height}}=10$ y $n_{\text{tilings}}=8$ se obtiene un compromiso útil: resolución suficiente en pasillos y solapamiento para transferir experiencia entre posiciones cercanas.
@@ -221,18 +221,18 @@ La política de comportamiento es $\epsilon$-greedy con decaimiento exponencial.
 Se fijaron $n_{\text{tiles\_width}}=10$, $n_{\text{tiles\_height}}=10$, $n_{\text{tilings}}=8$, zona objetivo $(2.5,8,1.0,2.0)$, $\gamma=0.99$ y $10{,}000$ episodios. Los hiperparámetros más sensibles fueron $\alpha$ y el calendario de $\epsilon$: un decaimiento excesivo degradó por cierre prematuro; posponer demasiado el inicio enlentece la convergencia. El refactor incluyó centralizar código, corregir la forma de \texttt{weights} a matriz bidimensional y exponer parámetros antes embebidos.
 
 \subsection{Comparativa SARSA vs Q-learning}
-Se entrenaron ambos agentes con los mismos mosaicos, $\gamma=0.99$, $10{,}000$ episodios, y un calendario de $\epsilon$ con decaimiento tardío. En este entorno determinista, Q-learning suele consolidar trayectorias más rápidas; SARSA tiende a políticas algo más conservadoras si hay estocasticidad. Las figuras siguientes muestran las métricas de cada agente:
+Se entrenaron ambos agentes con los mismos tiles, $\gamma=0.99$, $10{,}000$ episodios, y un calendario de $\epsilon$ con decaimiento tardío. En este entorno determinista, Q-learning suele consolidar trayectorias más rápidas; SARSA tiende a políticas algo más conservadoras si hay estocasticidad. Las figuras siguientes muestran las métricas de cada agente:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{../plots/qlearning_metrics_10000_0.1_0.05_8.90.png}
+    \includegraphics[width=\textwidth]{../plots/qlearning_metrics_10000_0.1_0.05_9.30.png}
     \caption{Q-learning: retornos, media móvil (100), longitudes y éxito.}
     \label{fig:qlearning-metrics}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{../plots/sarsa_metrics_10000_0.1_0.05_9.10.png}
+    \includegraphics[width=\textwidth]{../plots/sarsa_metrics_10000_0.1_0.05_9.70.png}
     \caption{SARSA: retornos, media móvil (100), longitudes y éxito.}
     \label{fig:sarsa-metrics}
 \end{figure}
@@ -241,6 +241,69 @@ En los resultados que obtuvimos, ambos alcanzan tasas de éxito muy altas. Q-lea
 
 \newpage
 
-\section{Operación en almacén}
+\section{TD $\lambda$: Entornos 1 y 2}
+
+En esta sección se aborda la resolución de los dos primeros entornos de almacén mediante aprendizaje por refuerzo con aproximación lineal y \textit{tile coding}. El agente opera en un espacio continuo de 10\,m $\times$ 10\,m, con obstáculos fijos (estanterías) y objetos a recoger y/o entregar según el entorno.
+
+\subsection{Descripción de los entornos}
+
+\begin{itemize}
+    \item \textbf{Entorno 1:} Los objetos están en posiciones fijas sobre las estanterías. El objetivo consiste en que el agente se aproxime a cualquiera de ellos y lo recoja. El episodio termina con éxito al recoger un objeto, o con fracaso si hay colisión con paredes o estanterías.
+    \item \textbf{Entorno 2:} Los objetos siguen en posiciones fijas, pero el objetivo es entregar uno de ellos en la zona verde de recogida. El agente debe primero recoger un objeto y después depositarlo correctamente en el área de entrega. El episodio termina con éxito al soltar el objeto en la zona de entrega, o con fracaso si hay colisión o si se suelta el objeto fuera del área.
+\end{itemize}
+
+\subsection{Representación del estado}
+
+Para ambos entornos, se emplea \textit{tile coding} como técnica de representación del estado. La observación del entorno incluye la posición del agente, las posiciones de los objetos, y banderas de colisión y entrega. El estado se normaliza y se codifica en tiles solapados, lo que permite generalizar entre posiciones cercanas y facilita el aprendizaje en espacios continuos. La alternativa de representación vectorizada se ha probado, pero no ofrece buen rendimiento en estos entornos.
+\subsection{Diseño de la recompensa}
+
+El diseño de la función de recompensa es un aspecto clave para guiar el aprendizaje del agente en ambos entornos. Se ha optado por una estructura sencilla y directa, que penaliza los pasos innecesarios y refuerza los comportamientos deseados:
+
+\begin{itemize}
+    \item \textbf{Penalización por paso:} Cada acción realizada por el agente conlleva una penalización pequeña (por ejemplo, $-0.1$), incentivando trayectorias cortas y eficientes.
+    \item \textbf{Recompensa por éxito:} Al recoger un objeto (entorno 1) o al entregar correctamente un objeto en la zona de entrega (entorno 2), el agente recibe una recompensa positiva significativa (por ejemplo, $+10$), que marca el objetivo principal de la tarea.
+    \item \textbf{Penalización por fallo:} Si el agente colisiona con una pared o estantería, o si intenta realizar una acción inválida (como recoger sin estar cerca de un objeto, o soltar fuera del área de entrega), recibe una penalización fuerte (por ejemplo, $-10$), y el episodio termina.
+    \item \textbf{Acciones inválidas:} Acciones como intentar recoger un objeto cuando ya se lleva uno, o intentar soltar sin portar objeto, reciben una penalización menor (por ejemplo, $-1$), desincentivando comportamientos erróneos pero sin terminar el episodio.
+    \item \textbf{Penalización por \textit{timeout}:} Si el agente supera el número máximo de pasos permitido sin completar la tarea, el episodio se trunca y se aplica una penalización intermedia (por ejemplo, $-5$), penalizando la ineficiencia y evitando que el agente aprenda a alargar los episodios innecesariamente.
+\end{itemize}
+
+Esta estructura de recompensas favorece el aprendizaje rápido y estable, ya que el agente recibe señales claras sobre qué comportamientos son deseables y cuáles debe evitar. Además, la penalización por paso ayuda a minimizar el número de acciones necesarias para completar la tarea, promoviendo trayectorias óptimas.
+
+\subsection{Agente y algoritmo}
+
+El agente implementa el algoritmo TD($\lambda$), que combina la actualización temporal-diferencial con trazas de elegibilidad para acelerar la propagación de la señal de recompensa. La política de comportamiento es $\epsilon$-greedy con decaimiento exponencial, y los hiperparámetros se ajustan para favorecer la exploración inicial y la consolidación posterior.
+
+La aproximación lineal se realiza sobre los índices activos de los tiles, y los pesos se actualizan únicamente en las coordenadas correspondientes, siguiendo la derivada del modelo lineal.
+\subsection{Comparativa de hiperparámetros y entrenamiento}
+
+Aunque la estructura del entorno y el agente es similar en los dos casos, el ajuste de los hiperparámetros varía para adaptarse a la dificultad y naturaleza de cada tarea:
+
+\begin{itemize}
+    \item \textbf{Entorno 1 (recogida):} Se emplea una tasa de aprendizaje (\texttt{learning\_rate}) mayor, típicamente en el rango $0.01$--$0.013$, y un número de episodios de entrenamiento más reducido (por ejemplo, $3{,}000$). El decaimiento de $\epsilon$ comienza en torno al 50\% de los episodios y termina cerca del 70\%. El valor inicial de $\epsilon$ es moderado ($0.3$), ya que la tarea es más sencilla y la exploración se consolida rápidamente.
+    \item \textbf{Entorno 2 (recogida y entrega):} La tarea es más compleja, por lo que se reduce la tasa de aprendizaje (\texttt{learning\_rate} $\approx 0.003$) para estabilizar el aprendizaje y se incrementa el número de episodios (hasta $15{,}000$). El valor inicial de $\epsilon$ es mayor ($0.5$) para fomentar la exploración, y el decaimiento se inicia antes (30\%) para permitir una transición más gradual hacia la explotación. El factor de descuento (\texttt{discount\_factor}) también se ajusta ligeramente ($0.995$) para dar más peso a las recompensas futuras, ya que la secuencia de acciones óptima es más larga.
+\end{itemize}
+
+Estos ajustes permiten que el agente se adapte a la dificultad de cada entorno, logrando una convergencia eficiente y una política robusta en ambos casos. La diferencia principal radica en la necesidad de mayor exploración y entrenamiento en el entorno de entrega, donde la secuencia óptima requiere más pasos y una coordinación precisa entre las acciones de recogida y entrega.
+
+\subsection{Resultados}
+
+En ambos entornos, el agente TD($\lambda$) con \textit{tile coding} logra aprender políticas eficaces que resuelven la tarea en un número reducido de pasos y con alta tasa de éxito. El entrenamiento muestra una mejora progresiva en el retorno y la longitud de los episodios, y la tasa de éxito se estabiliza cerca del máximo posible. La representación por tiles resulta esencial para la generalización y el aprendizaje eficiente en estos escenarios.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../plots/td_lambda_metrics_1_t_3000_0.0125_0.02_0.85_7.39.png}
+    \caption{Métricas de entrenamiento en Entorno 1: retornos, media móvil, longitud de episodios y tasa de éxito.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../plots/td_lambda_metrics_2_t_15000_0.003_0.05_0.28_3.54.png}
+    \caption{Métricas de entrenamiento en Entorno 2: retornos, media móvil, longitud de episodios y tasa de éxito.}
+\end{figure}
+
+\subsection{Conclusión}
+
+La combinación de TD($\lambda$) y \textit{tile coding} permite resolver de forma robusta los entornos de almacén con objetos fijos, tanto en tareas de recogida como de entrega. La representación vectorizada no resulta adecuada en estos casos, mientras que los tiles solapados facilitan la generalización y el aprendizaje eficiente.
+
 
 \end{document}
