@@ -346,12 +346,11 @@ class TDLambdaAgent:
             progress_bar.set_description(f"Eval | Success Rate (last {success_window}): {eval_success_rate:.1f}% | Avg Return (last {success_window}): {eval_avg_return:.2f}")
         
         avg_return: float = float(np.mean(total_returns))
-        print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
         success_rate: float = float(np.mean(np.array(successes)))
         
         return avg_return, success_rate
     
-    def plot_training_metrics(self, num_episodes: int, avg_return: float) -> None:
+    def plot_training_metrics(self, num_episodes: int, avg_return: float, env_variant: str, workspace_def: str, learning_rate: float, decay_start: float, decay_end: float) -> None:
         """Plot training progress.
         
         Args:
@@ -367,6 +366,8 @@ class TDLambdaAgent:
         axes[0, 0].set_xlabel('Episode')
         axes[0, 0].set_ylabel('Total Return')
         axes[0, 0].grid(True)
+        axes[0, 0].axvline(x=decay_start*num_episodes, linestyle=':', color='red', linewidth=2)
+        axes[0, 0].axvline(x=decay_end*num_episodes, linestyle=':', color='green', linewidth=2)
         
         # Moving average of returns
         window: int = 500
@@ -377,6 +378,8 @@ class TDLambdaAgent:
             axes[0, 1].set_xlabel('Episode')
             axes[0, 1].set_ylabel('Avg Return')
             axes[0, 1].grid(True)
+            axes[0, 1].axvline(x=decay_start*num_episodes, linestyle=':', color='red', linewidth=2)
+            axes[0, 1].axvline(x=decay_end*num_episodes, linestyle=':', color='green', linewidth=2)
         
         # Episode lengths
         axes[1, 0].plot(self.episode_lengths)
@@ -384,6 +387,8 @@ class TDLambdaAgent:
         axes[1, 0].set_xlabel('Episode')
         axes[1, 0].set_ylabel('Steps')
         axes[1, 0].grid(True)
+        axes[1, 0].axvline(x=decay_start*num_episodes, linestyle=':', color='red', linewidth=2)
+        axes[1, 0].axvline(x=decay_end*num_episodes, linestyle=':', color='green', linewidth=2)
         
         # Success rate
         axes[1, 1].plot(self.success_rate)
@@ -391,13 +396,60 @@ class TDLambdaAgent:
         axes[1, 1].set_xlabel('Episode')
         axes[1, 1].set_ylabel('Success %')
         axes[1, 1].grid(True)
+        axes[1, 1].axvline(x=decay_start*num_episodes, linestyle=':', color='red', linewidth=2)
+        axes[1, 1].axvline(x=decay_end*num_episodes, linestyle=':', color='green', linewidth=2)
         
         plt.tight_layout()
         plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
         plt.show()
 
+    def plot_value_heatmaps(self, num_episodes: int, env_variant: str, workspace_def: str, learning_rate: float, n_tiles_height: float, n_tiles_width: float):
+        """
+        Plot the value weights for each action as heatmaps.
+        For tile coding: reshape weights to (n_tiles_height, n_tiles_width).
+        For vectorized: reshape if possible, else plot as 1D.
+        """
+        num_actions = self.num_actions
+        n_cols = min(4, num_actions)
+        n_rows = (num_actions + n_cols - 1) // n_cols
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
+        axes = axes.flatten() if num_actions > 1 else [axes]
 
-if __name__ == "__main__":
+        for action in range(num_actions):
+            if self.feedback.use_tiles:
+                n_tilings = self.feedback.num_tilings
+                weights = self.weights[action]
+                tile_weights = np.zeros((n_tiles_height, n_tiles_width))
+                for tiling in range(n_tilings):
+                    offset = tiling * n_tiles_height * n_tiles_width
+                    tile_weights += weights[offset:offset + n_tiles_height * n_tiles_width].reshape(n_tiles_height, n_tiles_width)
+                tile_weights /= n_tilings
+                im = axes[action].imshow(tile_weights, cmap='viridis', origin='lower')
+                axes[action].set_title(f"Action {action} Weights (Tiles)")
+                plt.colorbar(im, ax=axes[action])
+            else:
+                features = self.weights[action]
+                size = int(np.sqrt(len(features)))
+                if size * size == len(features):
+                    im = axes[action].imshow(features.reshape(size, size), cmap='viridis', origin='lower')
+                    axes[action].set_title(f"Action {action} Weights (Vector 2D)")
+                    plt.colorbar(im, ax=axes[action])
+                else:
+                    axes[action].plot(features)
+                    axes[action].set_title(f"Action {action} Weights (Vector 1D)")
+                    axes[action].set_xlabel("Feature Index")
+                    axes[action].set_ylabel("Weight")
+
+        # Hide unused axes if any
+        for i in range(num_actions, len(axes)):
+            axes[i].axis('off')
+
+        plt.tight_layout()
+        plt.savefig(f'plots/td_lambda_heatmap_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
+        plt.show()
+
+
+def main():
     # Set seed for reproducibility
     SEED = 42
     set_seed(SEED)
@@ -414,7 +466,6 @@ if __name__ == "__main__":
         # Common params
         discount_factor: float = 0.99 # Gamma: importance of future rewards
         lambda_value: float = 0.8
-        decay_rate: float = 0.995 # Control of the (exponential) decrease of epsilon
         min_epsilon: float = 0.02
         episodes_update: int = 100
 
@@ -425,6 +476,7 @@ if __name__ == "__main__":
             
             # Training params
             decay_start: float = 0.5 # Start epsilon decay at n% of total episodes
+            decay_end: float = 0.7
             num_episodes: int = 3000
             
         else:
@@ -434,7 +486,7 @@ if __name__ == "__main__":
             
             # Training params
             decay_start: float = 0.3  
-            decay_rate: float = 0.9995  
+            decay_end: float = 0.7
             num_episodes: int = 5000
 
     elif env_variant == "2":
@@ -445,7 +497,6 @@ if __name__ == "__main__":
         # Common params
         discount_factor: float = 0.995 # Gamma: importance of future rewards
         lambda_value: float = 0.7
-        decay_rate: float = 0.998 # Control of the (exponential) decrease of epsilon
         min_epsilon: float = 0.05
         episodes_update: int = 100
 
@@ -456,6 +507,7 @@ if __name__ == "__main__":
             
             # Training params
             decay_start: float = 0.3 # Start epsilon decay at n% of total episodes
+            decay_end: float = 0.7
             num_episodes: int = 15000
             
         else:
@@ -465,8 +517,8 @@ if __name__ == "__main__":
             lambda_value: float = 0.9
             
             # Training params
-            decay_rate: float = 0.9995 # Control of the (exponential) decrease of epsilon
             decay_start: float = 0.5 # Start epsilon decay at n% of total episodes
+            decay_end: float = 0.7
             num_episodes: int = 50000
             
     else:
@@ -477,7 +529,6 @@ if __name__ == "__main__":
         # Common params
         discount_factor: float = 0.99
         lambda_value: float = 0.8
-        decay_rate: float = 0.9995
         min_epsilon: float = 0.05
         episodes_update: int = 100
 
@@ -488,6 +539,7 @@ if __name__ == "__main__":
             
             # Training params
             decay_start: float = 0.3
+            decay_end: float = 0.7
             num_episodes: int = 30000
             
         else:
@@ -497,10 +549,12 @@ if __name__ == "__main__":
             lambda_value: float = 0.9
             
             # Training params
-            decay_rate: float = 0.9997
             decay_start: float = 0.2
+            decay_end: float = 0.7
             num_episodes: int = 100000
 
+    # Control of the (exponential) decrease of epsilon
+    decay_rate: float = (min_epsilon/epsilon)**(1/max(1, num_episodes*(decay_end - decay_start)))
     
     # Instantiate environment and representation
     env: WarehouseEnv = WarehouseEnv(just_pick, random_objects) #, render_mode="human")
@@ -539,7 +593,8 @@ if __name__ == "__main__":
     success_rate: float
     avg_return, success_rate = agent.evaluate(num_episodes=500)
     
-    print(f"Avg_return: {avg_return}\nSucess rate: {success_rate}\nSuccess needed: {success_threshold}")
+    print(f"Results over {num_episodes} episodes:")
+    print(f"Avg return: {avg_return}\nSucess rate:{'\33[41m' if success_rate < success_threshold else '\33[42m'} {success_rate} {'\33[0m'}\nSuccess needed: {success_threshold}")
 
     
     # Save the agent object into memory    
@@ -547,4 +602,8 @@ if __name__ == "__main__":
         pickle.dump(agent, f)
     
     # Plot the training results
-    agent.plot_training_metrics(num_episodes, avg_return)
+    agent.plot_training_metrics(num_episodes, avg_return, env_variant, workspace_def, learning_rate, decay_start, decay_end)
+    agent.plot_value_heatmaps(num_episodes, env_variant, workspace_def, learning_rate, n_tiles_width, n_tiles_height)
+
+if __name__ == "__main__":
+    main()
