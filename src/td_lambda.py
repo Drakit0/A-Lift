@@ -5,6 +5,7 @@ from representation import FeedbackConstruction
 import pickle
 import matplotlib.pyplot as plt
 from typing import Optional, Tuple, List
+from tqdm import trange
 
 
 def set_seed(seed: int = 42) -> None:
@@ -172,7 +173,9 @@ class TDLambdaAgent:
         success_window: int = 100  # Track success over last N episodes
         recent_successes: List[int] = []
 
-        for episode in range(num_episodes):
+        progress_bar = trange(num_episodes)
+
+        for episode in progress_bar:
             # Episode setup
             obs, _ = self.env.reset()
             
@@ -221,12 +224,7 @@ class TDLambdaAgent:
             current_success_rate: float = sum(recent_successes) / len(recent_successes)
             self.success_rate.append(current_success_rate)
             
-            if episode % episodes_update == 0:                      
-                print(f"Episode {episode}, Total undiscounted return: {episode_return}, Epsilon: {self.epsilon}")
-                # print(f"Steps: {n_steps}")
-                # print(f"Success Rate (last {success_window}): {current_success_rate:.1f}%")
-                # print(f"Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
-                # you can save the current state of the agent, if you find it useful    
+            progress_bar.set_description(f"Epsilon: {self.epsilon:.3f} | Success Rate (last {success_window}): {current_success_rate:.1f}% | N steps (last {success_window}): {str(int(np.mean(self.episode_lengths[-success_window:]))).rjust(3, "0")} | Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
 
     
     def evaluate(self, num_episodes: int) -> tuple[float, float]:
@@ -316,7 +314,7 @@ class TDLambdaAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon}_{self.success_rate:.2f}_{avg_return:.2f}.png')
+        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
         plt.show()
 
 
