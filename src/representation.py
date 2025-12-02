@@ -52,8 +52,11 @@ class FeedbackConstruction:
             self.scale_width: float = dims[0] / n_tiles[0]
             self.scale_height: float = dims[1] / n_tiles[1]  
             self.num_tilings: int = n_tilings
-            # Increase max_size for env 3 to accommodate distance bins
-            extra_capacity = 8000 if random_objects else 4000
+            # Increase max_size for env 2 and 3 to accommodate direction and distance bins
+            if just_pick:
+                extra_capacity = 2000  # Env 1: simpler state space
+            else:
+                extra_capacity = 8000  # Env 2 & 3: direction + distance bins
             self.max_size: int = n_tiles[0] * n_tiles[1] * self.num_tilings + extra_capacity
             self.iht: IHT = IHT(self.max_size)
             self.observation_size: int = self.iht.size
@@ -99,16 +102,13 @@ class FeedbackConstruction:
                 
                 # Discretize direction to target (8 directions + at target)
                 direction: int = self._get_direction(agent_pos, target)
+                distance_bin: int = self._get_distance_bin(agent_pos, target)
                 
-                if self.random_objects:  # Env 3: include distance information
-                    distance_bin: int = self._get_distance_bin(agent_pos, target)
-                    active_tiles: List[int] = self._get_active_tiles_env3(norm_x, norm_y, has_object, direction, distance_bin)
-                else:  # Env 2: fixed objects
-                    active_tiles: List[int] = self._get_active_tiles_env2(norm_x, norm_y, has_object, direction)
+                active_tiles: List[int] = self._get_active_tiles_more_info(norm_x, norm_y, has_object, direction, distance_bin)
             
             return active_tiles
         
-        # DQN with rich features - enhanced feature engineering
+        # DQN with rich features 
         if self.use_rich_features:
             return self._process_rich_features(obs)
         
@@ -446,39 +446,9 @@ class FeedbackConstruction:
                 
         return active_tiles
     
-    def _get_active_tiles_env2(self, norm_x: float, norm_y: float, 
-                                has_object: int, direction: int) -> List[int]:
-        """Calculate active tiles for Env 2 including direction information.
-        
-        Args:
-            norm_x: Normalized x-coordinate.
-            norm_y: Normalized y-coordinate.
-            has_object: Whether agent holds an object (0 or 1).
-            direction: Discretized direction to target (0-8).
-            
-        Returns:
-            List of active tile indices.
-        """
-        offset_factor_x: float = 1/self.num_tilings * 3
-        offset_factor_y: float = 1/self.num_tilings * 1
-        active_tiles: List[int] = []
-        
-        for i in range(self.num_tilings):
-            offset_x: float = offset_factor_x * i
-            offset_y: float = offset_factor_y * i
-            
-            tile_temp: List[int] = tiles(self.iht, 1, 
-                    [norm_x - offset_x, 
-                     norm_y - offset_y],
-                    ints=[i, has_object, direction])
-            
-            active_tiles.append(tile_temp[0])
-                
-        return active_tiles
-    
-    def _get_active_tiles_env3(self, norm_x: float, norm_y: float, 
+    def _get_active_tiles_more_info(self, norm_x: float, norm_y: float, 
                                 has_object: int, direction: int, distance_bin: int) -> List[int]:
-        """Calculate active tiles for Env 3 with random objects - includes distance information.
+        """Calculate active tiles for Env 2 and 3 including direction and distance information.
         
         Args:
             norm_x: Normalized x-coordinate.
@@ -498,7 +468,6 @@ class FeedbackConstruction:
             offset_x: float = offset_factor_x * i
             offset_y: float = offset_factor_y * i
             
-            # Include distance_bin for better generalization in random object environments
             tile_temp: List[int] = tiles(self.iht, 1, 
                     [norm_x - offset_x, 
                      norm_y - offset_y],
@@ -507,7 +476,6 @@ class FeedbackConstruction:
             active_tiles.append(tile_temp[0])
                 
         return active_tiles
-
   
 if __name__ == "__main__":
 

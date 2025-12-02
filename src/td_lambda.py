@@ -325,7 +325,7 @@ class TDLambdaAgent:
             success: bool = False
             
             while not terminated and not truncated and step_count < max_eval_steps:
-                action: int = self.get_action(state, 0.0)  # Greedy evaluation
+                action: int = self.get_action(state, 0.00)
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
                 
                 self.env.render()
@@ -336,9 +336,6 @@ class TDLambdaAgent:
                 # Check for success (positive terminal reward)
                 if terminated and reward > 0:
                     success = True
-                
-            if step_count >= max_eval_steps:
-                print(f"  Episode {episode} hit step limit - agent got stuck")
             
             successes.append(1 if success else 0)
             total_returns.append(total_undiscounted_return)
@@ -406,7 +403,7 @@ if __name__ == "__main__":
     set_seed(SEED)
     
     # Select environment variant
-    env_variant:str = "2"  # Change to "2" or "3" for other variants
+    env_variant:str = "3"  # Change to "2" or "3" for other variants
     workspace_def:str = "t" #tile-coding or vectorized space
     
     if env_variant == "1":
