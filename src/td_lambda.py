@@ -240,7 +240,10 @@ class TDLambdaAgent:
         total_returns: List[float] = []
         successes: List[int] = []
         
-        for episode  in range(num_episodes):
+        success_window: int = 100
+        progress_bar = trange(num_episodes)
+
+        for episode in progress_bar:
             state, _ = self.env.reset()
             total_undiscounted_return: float = 0
             terminated: bool = False
@@ -252,9 +255,6 @@ class TDLambdaAgent:
                 action: int = self.get_action(state, 0.0)  # Evaluate the policy
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
                 
-                if step_count % 50 == 0:
-                    print(f"  Ep {episode}, Step {step_count}, Pos: {state[:2]}, Action: {action}")
-                
                 self.env.render()
                 state = next_state
                 total_undiscounted_return += reward
@@ -265,6 +265,8 @@ class TDLambdaAgent:
             
             successes.append(1 if reward > 0 else 0)
             total_returns.append(total_undiscounted_return)
+            
+            progress_bar.set_description(f"Epsilon: {self.epsilon:.3f} | Success Rate (last {success_window}): {np.mean(successes[-success_window:]):.1f}% | N steps (last {success_window}): {str(int(np.mean(self.episode_lengths[-success_window:]))).rjust(3, "0")} | Avg Return (last {success_window}): {np.mean(self.episode_returns[-success_window:]):.2f}")
         
         avg_return: float = float(np.mean(total_returns))
         print(f"Average undiscounted return over {num_episodes} episodes: {avg_return}")
@@ -290,7 +292,7 @@ class TDLambdaAgent:
         axes[0, 0].grid(True)
         
         # Moving average of returns
-        window: int = 100
+        window: int = 500
         if len(self.episode_returns) >= window:
             moving_avg: np.ndarray = np.convolve(self.episode_returns, np.ones(window)/window, mode='valid')
             axes[0, 1].plot(moving_avg)
