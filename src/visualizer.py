@@ -155,7 +155,7 @@ def list_models(models_dir: str) -> list:
 
 if __name__ == "__main__":
     
-    seed: int = 42
+    seed: int = 69
     episodes: int = 5
     
     print("\nAvailable models:")

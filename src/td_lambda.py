@@ -216,7 +216,7 @@ class TDLambdaAgent:
         progress_bar = trange(num_episodes)
 
         for episode in progress_bar:
-            # Episode setup - seed each episode deterministically for reproducibility
+            # Seed up for reproductibility
             if self.seed is not None:
                 episode_seed = self.seed + episode
                 obs, _ = self.env.reset(seed=episode_seed)
@@ -481,13 +481,13 @@ class TDLambdaAgent:
         plt.show()
 
 
-def main():
+if __name__ == "__main__":
     # Set seed for reproducibility
     SEED = 42
     set_seed(SEED)
     
     # Select environment variant
-    env_variant:str = "3"  # Change to "2" or "3" for other variants
+    env_variant:str = "1"  # Change to "2" or "3" for other variants
     workspace_def:str = "t" #tile-coding or vectorized space
     
     if env_variant == "1":
@@ -559,33 +559,33 @@ def main():
         success_threshold = 0.85
         
         # Common params
-        discount_factor: float = 0.99
-        lambda_value: float = 0.8
-        min_epsilon: float = 0.05
+        discount_factor: float = 0.995 # Gamma: importance of future rewards
+        lambda_value: float = 0.85  
+        min_epsilon: float = 0.03  
         episodes_update: int = 100
 
         if workspace_def == "t":
-            # Agent params for tile coding (env 3)
-            learning_rate: float = 0.005
-            epsilon: float = 0.8
+            # Agent params
+            learning_rate: float = 0.004
+            epsilon: float = 0.7 
             
             # Training params
-            decay_start: float = 0.3
-            decay_end: float = 0.7
-            num_episodes: int = 29000
+            decay_start: float = 0.2  # Start epsilon decay at n% of total episodes
+            decay_end: float = 0.6 
+            num_episodes: int = 30000 
             
         else:
-            # Agent params for vectorized (env 3)
-            learning_rate: float = 0.0001
+            # Agent params
+            learning_rate: float = 0.0001 
             epsilon: float = 1.0
             lambda_value: float = 0.9
             
             # Training params
-            decay_start: float = 0.2
+            decay_start: float = 0.2 # Start epsilon decay at n% of total episodes
             decay_end: float = 0.7
             num_episodes: int = 100000
 
-    # Control of the (exponential) decrease of epsilon
+    # Exponential decrease of epsilon
     decay_rate: float = (min_epsilon/epsilon)**(1/max(1, num_episodes*(decay_end - decay_start)))
     
     # Instantiate environment and representation
@@ -637,6 +637,3 @@ def main():
     agent.plot_training_metrics(num_episodes, avg_return, env_variant, workspace_def, learning_rate, decay_start, decay_end)
     agent.plot_value_heatmaps(num_episodes, env_variant, workspace_def, learning_rate, n_tiles_width, n_tiles_height)
     agent.plot_evaluation_metrics(total_returns, successes, episodes_length, success_threshold, num_episodes, env_variant, workspace_def, learning_rate)
-
-if __name__ == "__main__":
-    main()
