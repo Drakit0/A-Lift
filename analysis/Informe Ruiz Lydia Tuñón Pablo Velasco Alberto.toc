@@ -10,15 +10,11 @@
 \contentsline {subsection}{\numberline {1.5}Exploración de $\epsilon $}{3}{subsection.1.5}%
 \contentsline {subsection}{\numberline {1.6}Parámetros}{3}{subsection.1.6}%
 \contentsline {subsection}{\numberline {1.7}Comparativa SARSA vs Q-learning}{3}{subsection.1.7}%
-\contentsline {section}{\numberline {2}TD $\lambda $: Entornos 1 y 2}{6}{section.2}%
+\contentsline {section}{\numberline {2}Operación en fábrica}{6}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Descripción de los entornos}{6}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Representación del estado}{6}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Diseño de la recompensa}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.3}Diseño de la recompensa}{7}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}Agente y algoritmo}{7}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Comparativa de hiperparámetros y entrenamiento}{7}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.5}Comparativa de hiperparámetros y entrenamiento}{8}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}Resultados}{8}{subsection.2.6}%
-\contentsline {subsection}{\numberline {2.7}Conclusión}{9}{subsection.2.7}%
-\contentsline {section}{\numberline {3}TD $\lambda $: Entorno 3}{9}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Configuración y entrenamiento}{10}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Hiperparámetros utilizados}{10}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Resultados}{11}{subsection.3.3}%
+\contentsline {subsection}{\numberline {2.7}Conclusión}{11}{subsection.2.7}%
