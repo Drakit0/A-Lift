@@ -3,6 +3,8 @@
 /runs/
 /logs/
 
+**/__pycache__/
+
 # LaTeX auxiliary files
 *.aux
 *.log
