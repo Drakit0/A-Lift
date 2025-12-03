@@ -127,7 +127,7 @@
 {\fontfamily{ptm}\fontsize{30}{5}\selectfont{\textsc{\thetitle}}}\\
 %{\Huge\textbf{\thetitle}}\\
 [1.2cm]
-\includegraphics[width=8cm]{../fonts/Logo ICAI.png}
+\includegraphics[width=8cm]{../images/logo/Logo ICAI.png}
 \\[1.8cm]
 
 {\fontfamily{ptm}\fontsize{16}{5}\selectfont{Curso 2025-2026}}\\
@@ -173,7 +173,7 @@
 Esta sección documenta el diseño, las decisiones y los resultados de la práctica de navegación con aproximación lineal y \textit{tile coding}. El objetivo es aprender una política que desplace al agente en un mapa de 10\,m por 10\,m hasta una zona objetivo evitando colisiones, usando acciones discretas de desplazamiento cardinal con paso de 0.25\,m. Se parte de una observación cruda $(x,y,\text{collision},\text{target})$ y se construye una representación dispersa mediante tiles solapados.
 
 \subsection{Representación y generalización}
-El estado continuo no se presta a una tabla de valores, así que se emplea \textit{tile coding} con varias rejillas solapadas. Cada rejilla activa exactamente un índice, por lo que el vector de entrada $\mathbf{x}(s)$ tiene exactamente $n_{\text{tilings}}$ unos y el resto ceros. La normalización por anchura y altura de tile desacopla la escala del mapa de la discretización. Se aplican desplazamientos distintos por rejilla con paso relativo $(3,1)$ en los ejes para romper alineamientos regulares y evitar patrones repetitivos que degradan la generalización. Con $n_{\text{tiles\_width}}=10$, $n_{\text{tiles\_height}}=10$ y $n_{\text{tilings}}=8$ se obtiene un compromiso útil: resolución suficiente en pasillos y solapamiento para transferir experiencia entre posiciones cercanas.
+El estado continuo no se presta a una tabla de valores, así que se emplea \textit{tile coding} con varias rejillas solapadas. Cada rejilla activa exactamente un índice, por lo que el vector de entrada $\mathbf{x}(s)$ tiene exactamente $n_{\text{tilings}}$ de unos y el resto ceros. La normalización por anchura y altura de tile desacopla la escala del mapa de la discretización. Se aplican desplazamientos distintos por rejilla con paso relativo $(3,1)$ en los ejes para romper alineamientos regulares y evitar patrones repetitivos que degradan la generalización. Con $n_{\text{tiles\_width}}=10$, $n_{\text{tiles\_height}}=10$ y $n_{\text{tilings}}=8$ se obtiene un compromiso útil: resolución suficiente en pasillos y solapamiento para transferir experiencia entre posiciones cercanas.
 
 Los pesos se almacenan como una matriz $\texttt{weights}\in\mathbb{R}^{\texttt{num\_actions}\times\texttt{feature\_size}}$. Esta forma evita ambigüedades de indexado y permite sumar de manera vectorizada en las columnas correspondientes a los índices activos.
 
@@ -214,8 +214,10 @@ r + \gamma Q(s',a') - Q(s,a), & \text{en otro caso},
 \]
 En Q-learning se sustituye $Q(s',a')$ por $\max_{a'}Q(s',a')$. En ambos casos se actualizan solo las coordenadas activas.
 
-\subsection{Exploración de $\epsilon$}
-La política de comportamiento es $\epsilon$-greedy con decaimiento exponencial. Tres parámetros la gobiernan: fracción de episodios a partir de la cual empieza el decaimiento, razón de decaimiento y valor mínimo. Iniciar muy pronto o decaer agresivo cierra la exploración; iniciar muy tarde ralentiza la consolidación. En los ensayos fue equilibrado empezar entre el 50--70\% de episodios, con razón en $[0.95,0.99]$ y mínimo en $[0.02,0.05]$, de modo que al final la política sea casi determinista (como exige la evaluación).
+\subsection{Exploración de \texorpdfstring{$\epsilon$}{ε}}
+La política de comportamiento es $\epsilon$-greedy con decaimiento exponencial. Tres parámetros la gobiernan: fracción de episodios a partir de la cual empieza el decaimiento, razón de decaimiento y 
+valor mínimo. Iniciar muy pronto o decaer agresivo cierra la exploración; iniciar muy tarde ralentiza la consolidación. En los ensayos fue equilibrado empezar entre el 50--70\% de episodios, con razón 
+en $[0.95,0.99]$ y mínimo en $[0.02,0.05]$, de modo que al final la política sea casi determinista (como exige la evaluación).
 
 \subsection{Parámetros}
 Se fijaron $n_{\text{tiles\_width}}=10$, $n_{\text{tiles\_height}}=10$, $n_{\text{tilings}}=8$, zona objetivo $(2.5,8,1.0,2.0)$, $\gamma=0.99$ y $10{,}000$ episodios. Los hiperparámetros más sensibles fueron $\alpha$ y el calendario de $\epsilon$: un decaimiento excesivo degradó por cierre prematuro; posponer demasiado el inicio enlentece la convergencia. El refactor incluyó centralizar código, corregir la forma de \texttt{weights} a matriz bidimensional y exponer parámetros antes embebidos.
@@ -225,14 +227,14 @@ Se entrenaron ambos agentes con los mismos tiles, $\gamma=0.99$, $10{,}000$ epis
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{../plots/qlearning_metrics_10000_0.1_0.05_9.30.png}
+    \includegraphics[width=\textwidth]{../images/qlearning_metrics_10000_0.1_0.05_9.30.png}
     \caption{Q-learning: retornos, media móvil (100), longitudes y éxito.}
     \label{fig:qlearning-metrics}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{../plots/sarsa_metrics_10000_0.1_0.05_9.70.png}
+    \includegraphics[width=\textwidth]{../images/sarsa_metrics_10000_0.1_0.05_9.70.png}
     \caption{SARSA: retornos, media móvil (100), longitudes y éxito.}
     \label{fig:sarsa-metrics}
 \end{figure}
@@ -265,23 +267,80 @@ La información utilizada para la codificación varía según el entorno:
 
 La alternativa de representación vectorizada se ha probado, pero no ofrece buen rendimiento en estos entornos.
 
+\subsection{Modelos alternativos probados}
+
+Además del enfoque principal con SARSA($\lambda$) y \textit{tile coding}, se exploraron otras aproximaciones que, aunque no lograron los resultados deseados, aportan información valiosa sobre las características del problema.
+
+\subsubsection{Aproximación lineal vectorizada}
+
+Se probó una representación lineal directa utilizando las 11 variables crudas de la observación (posición del agente, posiciones de objetos, banderas de estado) como vector de \textit{features} continuas:
+\[
+Q(s,a) = \mathbf{w}_a^\top \mathbf{x}(s), \quad \mathbf{x}(s) \in \mathbb{R}^{11}
+\]
+
+\textbf{Problema identificado:} La aproximación lineal asume que $Q$ varía linealmente con las coordenadas, pero cerca de los obstáculos un desplazamiento de 0.25\,m puede significar la diferencia entre éxito y colisión. Esta discontinuidad no puede capturarse con un modelo lineal sobre \textit{features} crudas.
+
+\textbf{Resultado:} Tasa de éxito inferior al 50\% en el entorno 1, con comportamiento errático cerca de las estanterías.
+
+\subsubsection{Deep Q-Network (DQN)}
+
+Se implementó una DQN con las siguientes características:
+\begin{itemize}
+    \item Red neuronal de 3 capas ocultas (256-256-128-64 neuronas) con activaciones ReLU intermedias.
+    \item \textit{Experience replay} con buffer de 100,000 transiciones.
+    \item \textit{Prioritized replay} para muestrear experiencias con mayor error TD.
+    \item Red objetivo (\textit{target network}) actualizada cada 500 pasos.
+    \item Soporte para retornos $n$-step.
+\end{itemize}
+
+\textbf{Ventajas teóricas:} La red neuronal puede aprender funciones no lineales arbitrarias y generalizar a estados no vistos mediante representaciones internas.
+
+\textbf{Problemas encontrados:}
+\begin{enumerate}
+    \item \textbf{Velocidad:} El entrenamiento resultó entre 10-20 veces más lento que TD($\lambda$) con tiles, debido al coste computacional de las pasadas \textit{forward/backward} y el procesamiento de \textit{features}.
+    \item \textbf{Datos necesarios:} Requirió más de 50,000 episodios para alcanzar tasas de éxito comparables a las obtenidas con tiles en 3,000-30,000 episodios.
+    \item \textbf{Sensibilidad:} Alta sensibilidad a hiperparámetros (tasa de aprendizaje, arquitectura, tamaño de \textit{batch}).
+\end{enumerate}
+
+\textbf{Resultado:} La DQN no logró aprender políticas funcionales debido al coste computacional y la necesidad de ajuste fino, por lo que no quedó justificado su posterior desarrollo frente al enfoque con \textit{tile coding}, que ofrece resultados superiores con menor complejidad.
+
+\subsubsection{Comparativa de enfoques}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Modelo} & \textbf{Éxito Env 1} & \textbf{Éxito Env 2} & \textbf{Éxito Env 3} & \textbf{Episodios} & \textbf{Velocidad} \\
+\hline
+SARSA($\lambda$) + Tiles & 95\%+ & 90\%+ & 85\%+ & 3k--30k & $\sim$5 it/s \\
+SARSA($\lambda$) + Lineal & $<$6\% & -- & -- & 5k --50k & $\sim$3 it/s \\
+DQN & 20\% & -- & -- & 50k+ & $\sim$2 it/s \\
+\hline
+\end{tabular}
+\caption{Comparativa de rendimiento entre los modelos probados.}
+\end{table}
+
+\subsubsection{Conclusión de la exploración}
+
+La ingeniería de \textit{features} mediante \textit{tile coding} con variables adicionales (dirección y distancia al objetivo) demostró ser más efectiva que aproximaciones más complejas. Esto ilustra un principio importante del aprendizaje por refuerzo: \textbf{una representación del estado bien diseñada puede superar a modelos más potentes} cuando el dominio se comprende adecuadamente.
+
 \subsection{Diseño de la recompensa}
 
 El diseño de la función de recompensa es un aspecto clave para guiar el aprendizaje del agente en ambos entornos. Se ha optado por una estructura sencilla y directa, que penaliza los pasos innecesarios y refuerza los comportamientos deseados:
 
 \begin{itemize}
-    \item \textbf{Penalización por paso:} Cada acción realizada por el agente conlleva una penalización pequeña (por ejemplo, $-0.1$), incentivando trayectorias cortas y eficientes.
-    \item \textbf{Recompensa por éxito:} Al recoger un objeto (entorno 1) o al entregar correctamente un objeto en la zona de entrega (entorno 2), el agente recibe una recompensa positiva significativa (por ejemplo, $+10$), que marca el objetivo principal de la tarea.
-    \item \textbf{Penalización por fallo:} Si el agente colisiona con una pared o estantería, o si intenta realizar una acción inválida (como recoger sin estar cerca de un objeto, o soltar fuera del área de entrega), recibe una penalización fuerte (por ejemplo, $-10$), y el episodio termina.
-    \item \textbf{Acciones inválidas:} Acciones como intentar recoger un objeto cuando ya se lleva uno, o intentar soltar sin portar objeto, reciben una penalización menor (por ejemplo, $-1$), desincentivando comportamientos erróneos pero sin terminar el episodio.
-    \item \textbf{Penalización por \textit{timeout}:} Si el agente supera el número máximo de pasos permitido sin completar la tarea, el episodio se trunca y se aplica una penalización intermedia (por ejemplo, $-5$), penalizando la ineficiencia y evitando que el agente aprenda a alargar los episodios innecesariamente.
+    \item \textbf{Penalización por paso:} Cada acción realizada por el agente conlleva una penalización pequeña (en este caso, $-0.1$), incentivando trayectorias cortas y eficientes.
+    \item \textbf{Recompensa por éxito:} Al recoger un objeto (entorno 1) o al entregar correctamente un objeto en la zona de entrega (entorno 2), el agente recibe una recompensa positiva significativa (en este caso, $+10$), que marca el objetivo principal de la tarea.
+    \item \textbf{Penalización por fallo:} Si el agente colisiona con una pared o estantería, o si intenta realizar una acción inválida (como recoger sin estar cerca de un objeto, o soltar fuera del área de entrega), recibe una penalización fuerte (en este caso, $-1$), y el episodio termina.
+    \item \textbf{Acciones inválidas:} Acciones como intentar recoger un objeto cuando ya se lleva uno, o intentar soltar sin portar objeto, reciben una penalización menor (en este caso, $-1$), desincentivando comportamientos erróneos pero sin terminar el episodio.
+    \item \textbf{Penalización por \textit{timeout}:} Si el agente supera el número máximo de pasos permitido sin completar la tarea, el episodio se trunca y se aplica una penalización intermedia (en este caso, $-5$), penalizando la ineficiencia y evitando que el agente aprenda a alargar los episodios innecesariamente.
 \end{itemize}
 
 Esta estructura de recompensas favorece el aprendizaje rápido y estable, ya que el agente recibe señales claras sobre qué comportamientos son deseables y cuáles debe evitar. Además, la penalización por paso ayuda a minimizar el número de acciones necesarias para completar la tarea, promoviendo trayectorias óptimas.
 
 \subsection{Agente y algoritmo}
 
-El agente implementa el algoritmo TD($\lambda$), que combina la actualización temporal-diferencial con trazas de elegibilidad para acelerar la propagación de la señal de recompensa. La política de comportamiento es $\epsilon$-greedy con decaimiento exponencial, y los hiperparámetros se ajustan para favorecer la exploración inicial y la consolidación posterior.
+El agente implementa el algoritmo SARSA($\lambda$), que combina la actualización temporal-diferencial con trazas de elegibilidad para acelerar la propagación de la señal de recompensa. La política de comportamiento es $\epsilon$-greedy con decaimiento exponencial, y los hiperparámetros se ajustan para favorecer la exploración inicial y la consolidación posterior.
 
 La aproximación lineal se realiza sobre los índices activos de los tiles, y los pesos se actualizan únicamente en las coordenadas correspondientes, siguiendo la derivada del modelo lineal.
 \subsection{Comparativa de hiperparámetros y entrenamiento}
@@ -294,33 +353,33 @@ Aunque la estructura del entorno y el agente es similar en los dos casos, el aju
     \item \textbf{Entorno 3 (recogida y entrega con objetos aleatorios):} Se emplea una tasa de aprendizaje (\texttt{learning\_rate} $= 0.005$), un valor inicial de $\epsilon$ alto ($0.8$), y un número de episodios mayor ($29{,}000$) para compensar la mayor variabilidad en la posición de los objetos. El decaimiento de $\epsilon$ comienza en el 30\% y termina en el 70\% de los episodios. El factor de descuento es $0.99$ y $\lambda = 0.8$.
 \end{itemize}
 
-Cabe destacar que, al utilizar valores altos de $\lambda$ (por ejemplo, $0.8$), el método TD($\lambda$) se aproxima al comportamiento de Monte Carlo, ya que las actualizaciones dependen más de las recompensas futuras acumuladas a lo largo del episodio. Esto favorece la propagación eficiente de la señal de recompensa en tareas donde la secuencia óptima de acciones es larga o compleja.
+Cabe destacar que, al utilizar valores altos de $\lambda$ (por ejemplo, $0.8$), el método SARSA($\lambda$) se aproxima al comportamiento de Monte Carlo, ya que las actualizaciones dependen más de las recompensas futuras acumuladas a lo largo del episodio. Esto favorece la propagación eficiente de la señal de recompensa en tareas donde la secuencia óptima de acciones es larga o compleja.
 Estos ajustes permiten que el agente se adapte a la dificultad de cada entorno, logrando una convergencia eficiente y una política robusta en ambos casos. La diferencia principal radica en la necesidad de mayor exploración y entrenamiento en el entorno de entrega, donde la secuencia óptima requiere más pasos y una coordinación precisa entre las acciones de recogida y entrega.
 
 \subsection{Resultados}
 
-En los tres entornos, el agente TD($\lambda$) con \textit{tile coding} logra aprender políticas eficaces que resuelven la tarea en un número reducido de pasos y con alta tasa de éxito. El entrenamiento muestra una mejora progresiva en el retorno y la longitud de los episodios, y la tasa de éxito se estabiliza cerca del máximo posible. La representación por mosaicos resulta esencial para la generalización y el aprendizaje eficiente en estos escenarios.
+En los tres entornos, el agente SARSA($\lambda$) con \textit{tile coding} logra aprender políticas eficaces que resuelven la tarea en un número reducido de pasos y con alta tasa de éxito. El entrenamiento muestra una mejora progresiva en el retorno y la longitud de los episodios, y la tasa de éxito se estabiliza cerca del máximo posible. La representación por mosaicos resulta esencial para la generalización y el aprendizaje eficiente en estos escenarios.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{../plots/td_lambda_metrics_1_t_3000_0.0125_0.02_0.85_7.39.png}
+    \includegraphics[width=0.6\textwidth]{../images/sarsa_lambda_metrics_1_t_3000_0.0125_0.02_0.85_7.39.png}
     \caption{Métricas de entrenamiento en Entorno 1: retornos, media móvil, longitud de episodios y tasa de éxito.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{../plots/td_lambda_metrics_2_t_15000_0.003_0.05_0.28_12.63.png}
+    \includegraphics[width=0.6\textwidth]{../images/sarsa_lambda_metrics_2_t_15000_0.003_0.05_0.28_12.63.png}
     \caption{Métricas de entrenamiento en Entorno 2: retornos, media móvil, longitud de episodios y tasa de éxito.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{../plots/td_lambda_metrics_3_t_29000_0.005_0.05_0.20_-3.20.png}
+    \includegraphics[width=0.6\textwidth]{../images/sarsa_lambda_metrics_3_t_30000_0.004_0.03_0.37_-0.11.png}
     \caption{Métricas de entrenamiento en Entorno 3: retornos, media móvil, longitud de episodios y tasa de éxito.}
 \end{figure}
 
 \subsection{Conclusión}
 
-La combinación de TD($\lambda$) y \textit{tile coding} permite resolver de forma robusta los entornos de almacén, tanto en tareas de recogida como de entrega, incluso cuando la posición de los objetos varía aleatoriamente. La representación vectorizada no resulta adecuada en estos casos, mientras que los mosaicos solapados facilitan la generalización y el aprendizaje eficiente.
+La combinación de SARSA($\lambda$) y \textit{tile coding} permite resolver de forma robusta los entornos de almacén, tanto en tareas de recogida como de entrega, incluso cuando la posición de los objetos varía aleatoriamente. La representación vectorizada no resulta adecuada en estos casos, mientras que los mosaicos solapados facilitan la generalización y el aprendizaje eficiente.
 
 \end{document}

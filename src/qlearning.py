@@ -267,7 +267,7 @@ class QLAgent:
         axes[1, 1].grid(True)
         
         plt.tight_layout()
-        plt.savefig(f'plots/qlearning_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
+        plt.savefig(f'images/qlearning_metrics_{num_episodes}_{self.learning_rate}_{self.epsilon}_{avg_return:.2f}.png')
         plt.show()
 
 

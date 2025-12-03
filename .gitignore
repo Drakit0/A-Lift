@@ -2,3 +2,25 @@
 .devcontainer/
 /runs/
 /logs/
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.fls
+*.out
+*.fmt
+*.fot
+*.cb
+*.cb2
+*.lb
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.synctex.gz
+*.pdfsync
+*.pdf
+!*.tex

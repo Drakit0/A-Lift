@@ -583,7 +583,7 @@ class DQNAgent:
 
         plt.tight_layout()
         final_success_rate = self.success_rate[-1] if self.success_rate else 0
-        plt.savefig(f'plots/dqn_metrics_env_{env_str}_{num_episodes}_{self.learning_rate}_{self.epsilon}_{final_success_rate:.2f}_{avg_return:.2f}.png')
+        plt.savefig(f'images/dqn_metrics_env_{env_str}_{num_episodes}_{self.learning_rate}_{self.epsilon}_{final_success_rate:.2f}_{avg_return:.2f}.png')
         plt.show()
 
 if __name__ == "__main__":

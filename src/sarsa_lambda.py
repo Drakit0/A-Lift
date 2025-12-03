@@ -16,8 +16,8 @@ def set_seed(seed: int = 42) -> None:
     random.seed(seed)
     np.random.seed(seed)
 
-class TDLambdaAgent:
-    """TDLambdaAgent is an implementation of the TD(lambda)
+class SarsaLambdaAgent:
+    """SarsaLambdaAgent is an implementation of SARSA(λ) - on-policy TD control with eligibility traces.
     
     Attributes:
         env: The environment in which the agent operates.
@@ -38,7 +38,7 @@ class TDLambdaAgent:
                  learning_rate: float = 0.5, discount_factor: float = 0.9, 
                  epsilon: float = 0.5, lambda_value: float = 0.5,
                  seed: Optional[int] = None) -> None:
-        """Initializes the TDLambdaAgent with the given parameters.
+        """Initializes the SarsaLambdaAgent with the given parameters.
         
         Args:
             env: The environment in which the agent operates.
@@ -126,7 +126,7 @@ class TDLambdaAgent:
     
     def update(self, state: np.ndarray, action: int, reward: float, 
                next_state: np.ndarray, next_action: int, terminated: bool) -> None:
-        """Update the weights for the given state-action pair using the TD(lambda) algorithm.
+        """Update the weights for the given state-action pair using the SARSA(λ) algorithm.
         
         Args:
             state: The current state.
@@ -171,7 +171,7 @@ class TDLambdaAgent:
                 
     def train(self, num_episodes: int, decay_start: float, decay_rate: float, 
               min_epsilon: float, episodes_update: int = 1000, log_dir: Optional[str] = None) -> None:
-        """Train the agent using the TD(lambda) algorithm.
+        """Train the agent using the SARSA(λ) algorithm.
         
         Args:
             num_episodes: The number of episodes to train the agent.
@@ -187,7 +187,7 @@ class TDLambdaAgent:
         env_type = "env1" if self.feedback.just_pick else ("env3" if self.feedback.random_objects else "env2")
         
         if log_dir is None:
-            log_dir = f"runs/td_lambda_{env_type}_{repr_type}_lr{self.learning_rate}_g{self.discount_factor}_l{self.lambda_value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            log_dir = f"runs/sarsa_lambda_{env_type}_{repr_type}_lr{self.learning_rate}_g{self.discount_factor}_l{self.lambda_value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         os.makedirs(log_dir, exist_ok=True)
         writer = SummaryWriter(log_dir)
         print(f"TensorBoard logs will be saved to: {log_dir}")
@@ -195,7 +195,7 @@ class TDLambdaAgent:
         
         # Log hyperparameters
         hparams = {
-            'algorithm': 'TD(lambda)',
+            'algorithm': 'SARSA(lambda)',
             'env_type': env_type,
             'representation': repr_type,
             'learning_rate': self.learning_rate,
@@ -402,7 +402,7 @@ class TDLambdaAgent:
         axes[1, 1].axvline(x=decay_end*num_episodes, linestyle=':', color='green', linewidth=2)
         
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
+        plt.savefig(f'images/sarsa_lambda_metrics_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}_{np.mean(self.success_rate):.2f}_{avg_return:.2f}.png')
         plt.show()
 
     def plot_value_heatmaps(self, num_episodes: int, env_variant: str, workspace_def: str, learning_rate: float, n_tiles_height: float, n_tiles_width: float):
@@ -447,7 +447,7 @@ class TDLambdaAgent:
             axes[i].axis('off')
 
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_heatmap_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
+        plt.savefig(f'images/sarsa_lambda_heatmap_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
         plt.show()
     
     def plot_evaluation_metrics(self, total_returns: List[float], successes: List[int], episodes_length: List[int], success_threshold: float, num_episodes: int, env_variant: str, workspace_def: str, learning_rate: float):
@@ -477,7 +477,7 @@ class TDLambdaAgent:
         axes[2].set_ylabel('Steps')
 
         plt.tight_layout()
-        plt.savefig(f'plots/td_lambda_evaluation_violin_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
+        plt.savefig(f'images/sarsa_lambda_evaluation_violin_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{self.epsilon:.2f}.png')
         plt.show()
 
 
@@ -609,7 +609,7 @@ if __name__ == "__main__":
                                 random_objects=random_objects)
     
     #Initialize agent    
-    agent: TDLambdaAgent = TDLambdaAgent(env,
+    agent: SarsaLambdaAgent = SarsaLambdaAgent(env,
                        feedback, 
                        learning_rate, 
                        discount_factor, 
@@ -630,7 +630,7 @@ if __name__ == "__main__":
 
     
     # Save the agent object into memory    
-    with open(f'models/td_lambda_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{epsilon}_{success_rate}_{avg_return:.2f}.pkl', 'wb') as f:
+    with open(f'models/sarsa_lambda_{env_variant}_{workspace_def}_{num_episodes}_{learning_rate}_{epsilon}_{success_rate}_{avg_return:.2f}.pkl', 'wb') as f:
         pickle.dump(agent, f)
     
     # Plot the training results

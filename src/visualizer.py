@@ -8,7 +8,7 @@ import numpy as np
 from warehouse_environment import WarehouseEnv
 from navigation_environment import Navigation
 
-from td_lambda import TDLambdaAgent
+from sarsa_lambda import SarsaLambdaAgent
 from qlearning import QLAgent
 from sarsa import SarsaAgent
 
