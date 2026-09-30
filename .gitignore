@@ -26,3 +26,20 @@
 *.pdfsync
 *.pdf
 !*.tex
+
+# Python
+*.pyc
+.ipynb_checkpoints/
+venv/
+env/
+
+# OS and editors
+Thumbs.db
+.DS_Store
+desktop.ini
+.vscode/
+.idea/
+~$*
+
+# TensorBoard
+runs/
