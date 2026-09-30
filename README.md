@@ -93,3 +93,7 @@ analysis/   project report (LaTeX source and PDF)
 - Alberto Velasco Rodríguez
 
 Course project for Aprendizaje por refuerzo, Universidad Pontificia Comillas ICAI, academic year 2025-2026.
+
+## Licence
+
+MIT, see `LICENSE`. The ICAI logo in `images/logo/` is used only on the report cover. It belongs to the university and is not covered by the licence.
